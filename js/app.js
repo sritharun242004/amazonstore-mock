@@ -31,8 +31,8 @@
     });
     found.heroVideo = pick('video/hero', VID);
     found.bannerVideo = pick('video/banner', VID);
-    found.giftVideo = pick('video/gift-guide', VID);
-    found.brandFilm = pick('video/brand-film', VID);
+    // The Gift Guide banner loops a film: video/gift-guide.mp4 if present, otherwise the brand film
+    found.giftVideo = pick('video/gift-guide', VID) || pick('video/brand-film', VID);
   }
   const cover = (src, cls = '') => `<img class="media-cover ${cls}" src="${esc(src)}" alt="" loading="lazy">`;
   const coverVideo = (src, poster) => `<video class="media-cover" src="${esc(src)}" ${poster ? `poster="${esc(poster)}"` : ''} muted loop playsinline ${reduceMotion.matches ? '' : 'autoplay'} preload="metadata" aria-hidden="true"></video>`;
@@ -155,24 +155,8 @@
     </section>`;
   }
 
-  /* ---------- brand film (Amazon Stores video tile: plays muted, with pause and sound controls) ---------- */
-
   const soundOffIcon = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="m16 9 5 6m0-6-5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
   const soundOnIcon = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
-
-  function brandFilm() {
-    const still = reduceMotion.matches;
-    const poster = found['brand-film-poster'];
-    return `<section class="block film" aria-label="Aesop brand film">
-      <div class="block__head"><h2 class="block__title">For your hands. For you.</h2></div>
-      <div class="film__frame" data-video-host>
-        <video class="film__video" src="${esc(found.brandFilm)}" ${poster ? `poster="${esc(poster)}"` : ''} muted loop playsinline ${still ? '' : 'autoplay'} preload="metadata"
-          aria-label="Aesop film: hand wash, fragrance and serum. Now sold by Amazon, delivered with Prime."></video>
-        <button type="button" class="vbanner__toggle" data-video-toggle aria-label="${still ? 'Play video' : 'Pause video'}">${still ? playIcon : pauseIcon}</button>
-        <button type="button" class="vbanner__toggle film__sound" data-video-sound aria-label="Turn sound on">${soundOffIcon}</button>
-      </div>
-    </section>`;
-  }
 
   /* ---------- pages ---------- */
 
@@ -195,18 +179,20 @@
     ];
 
     const giftPhoto = found['banner-campaign'] || found['banner-gifts'] || found['cat-gifts'];
-    // With a wide campaign photo (or film) the banner is one full-bleed image with the copy over its left side
-    const fullBleed = !!(found.giftVideo || found['banner-campaign']);
+    const giftPoster = found['brand-film-poster'] || giftPhoto;
+    // A film sits beside the copy (split) so its baked-in captions stay visible; a wide photo goes full-bleed behind the copy
+    const fullBleed = !found.giftVideo && !!found['banner-campaign'];
     return `
-      <section class="campaign bleed ${fullBleed ? 'campaign--photo' : ''}" aria-label="2026 Gift Guide">
+      <section class="campaign bleed ${fullBleed ? 'campaign--photo' : ''} ${found.giftVideo ? 'campaign--video' : ''}" aria-label="2026 Gift Guide">
         <div class="campaign__copy">
           <h1 class="campaign__title">The 2026 Gift&nbsp;Guide</h1>
           <p class="campaign__lede">Considered gifts at the aesop.fr price, delivered tomorrow with Prime.</p>
           <a class="campaign__btn" href="#/gifts">Shop the Gift Guide</a>
         </div>
         <div class="campaign__art" data-video-host>
-          ${found.giftVideo ? coverVideo(found.giftVideo, giftPhoto) : giftPhoto ? cover(giftPhoto) : scene({ w: 900, h: 560, product: byId('arms-outstretched'), px: 0.5, scale: 1.1, plinthW: 380, dark: true })}
-          ${found.giftVideo ? `<button type="button" class="vbanner__toggle" data-video-toggle aria-label="${reduceMotion.matches ? 'Play video' : 'Pause video'}">${reduceMotion.matches ? playIcon : pauseIcon}</button>` : ''}
+          ${found.giftVideo ? coverVideo(found.giftVideo, giftPoster) : giftPhoto ? cover(giftPhoto) : scene({ w: 900, h: 560, product: byId('arms-outstretched'), px: 0.5, scale: 1.1, plinthW: 380, dark: true })}
+          ${found.giftVideo ? `<button type="button" class="vbanner__toggle" data-video-toggle aria-label="${reduceMotion.matches ? 'Play video' : 'Pause video'}">${reduceMotion.matches ? playIcon : pauseIcon}</button>
+          <button type="button" class="vbanner__toggle vbanner__sound" data-video-sound aria-label="Turn sound on">${soundOffIcon}</button>` : ''}
         </div>
       </section>
       ${pitchNote('')}
@@ -252,7 +238,7 @@
         </div>
       </section>
 
-      ${found.brandFilm ? brandFilm() : videoBanner()}
+      ${videoBanner()}
 
       <section class="block">
         <div class="block__head"><h2 class="block__title">Explore the store</h2></div>
