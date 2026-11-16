@@ -739,11 +739,8 @@
     e.currentTarget.textContent = on ? 'Following' : 'Follow';
   });
 
-  $('#notesToggle').addEventListener('click', e => {
-    const on = document.body.classList.toggle('notes-on');
-    e.currentTarget.setAttribute('aria-pressed', on);
-    e.currentTarget.textContent = on ? 'Hide pitch notes' : 'Show pitch notes';
-  });
+  // Pitch notes are hidden for normal visitors; open the site with ?notes to show them while presenting
+  if (new URLSearchParams(location.search).has('notes')) document.body.classList.add('notes-on');
 
   $('#shareBtn').addEventListener('click', async () => {
     try { await navigator.clipboard.writeText(location.href); toast('<b>Link copied</b> Paste it in your team chat.'); }

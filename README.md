@@ -25,7 +25,7 @@ python3 -m http.server 4173
 | Our values | `#/values` | Laura: B Corp, vegan, refills, price parity |
 | Product page | `#/p/<id>` | Amazon listing mock-up (buy box, Sold by Amazon) |
 
-Click **Show pitch notes** in the top bar while presenting. It shows which persona and problem each page answers.
+To show the pitch notes while presenting, open the site with `?notes` added to the link, e.g. `https://aesop-amazon-concept.vercel.app/?notes`. Each page then shows which persona and problem it answers.
 
 ## Deploy
 

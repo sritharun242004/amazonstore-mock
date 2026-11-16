@@ -71,19 +71,6 @@ ul, ol { margin: 0; padding: 0; }
 .skip-link { position: absolute; left: 8px; top: -60px; background: #fff; padding: 8px 12px; z-index: 100; border-radius: 4px; }
 .skip-link:focus { top: 8px; }
 
-/* ---------- concept ribbon ---------- */
-.concept-bar {
-  display: flex; gap: 12px; align-items: center; justify-content: center; flex-wrap: wrap;
-  padding: 6px var(--gutter);
-  background: #FFF4CC; color: #3A2A00; border-bottom: 1px solid #E8D48A;
-  font-family: var(--f-amz); font-size: 13.5px; text-align: center; padding-top: 9px; padding-bottom: 9px;
-}
-.concept-bar__btn {
-  background: transparent; border: 1px solid #B89B3A; color: inherit;
-  border-radius: 999px; padding: 2px 12px; font-size: 12px;
-}
-.concept-bar__btn:hover, .concept-bar__btn[aria-pressed="true"] { background: #3A2A00; color: #FFF4CC; }
-
 /* =========================================================
    Amazon header
    ========================================================= */
