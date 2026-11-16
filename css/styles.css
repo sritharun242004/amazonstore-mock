@@ -171,6 +171,20 @@ ul, ol { margin: 0; padding: 0; }
 .store-hero--photo .store-hero__brand { align-self: center; justify-self: center; }
 .store-hero--photo .store-hero__art { position: relative; inset: auto; order: 2; }
 .store-hero--photo .store-hero__art > * { object-position: 50% 50%; }
+/* Two-photo band: products on both sides fade into a charcoal centre that suits their black-and-white grading */
+.store-hero--duo { background: radial-gradient(ellipse at 50% 50%, #26231F 0%, #131211 70%); }
+.store-hero--duo .store-hero__art > .hero-duo { top: 0; bottom: 0; width: 47%; height: 100%; object-fit: cover; }
+.store-hero--duo .store-hero__art > .hero-duo--left {
+  left: 0; right: auto; object-position: 50% 55%;
+  -webkit-mask-image: linear-gradient(90deg, #000 52%, transparent 100%); mask-image: linear-gradient(90deg, #000 52%, transparent 100%);
+}
+.store-hero--duo .store-hero__art > .hero-duo--right {
+  left: auto; right: 0; object-position: 62% 50%;
+  -webkit-mask-image: linear-gradient(270deg, #000 52%, transparent 100%); mask-image: linear-gradient(270deg, #000 52%, transparent 100%);
+}
+.store-hero--duo .aesop-logo { font-size: clamp(44px, 6.4vw, 116px); }
+.store-hero--duo .store-hero__line { font-size: clamp(9px, .95vw, 15px); letter-spacing: .28em; }
+
 /* Soft fade so the photo melts into the brand texture instead of a hard seam */
 .store-hero--photo .store-hero__art::before {
   content: ""; position: absolute; inset: 0 auto 0 0; width: 22%; z-index: 1; pointer-events: none;
@@ -829,6 +843,11 @@ ul, ol { margin: 0; padding: 0; }
   .store-hero__line { margin-top: 8px; font-size: 11px; letter-spacing: .26em; }
   .store-hero--photo .aesop-logo { font-size: 46px; }
   .store-hero--photo .store-hero__line { font-size: 8.5px; letter-spacing: .18em; }
+  .store-hero--duo .store-hero__art > .hero-duo { width: 37%; }
+  .store-hero--duo .store-hero__art > .hero-duo--left { -webkit-mask-image: linear-gradient(90deg, #000 40%, transparent 100%); mask-image: linear-gradient(90deg, #000 40%, transparent 100%); }
+  .store-hero--duo .store-hero__art > .hero-duo--right { -webkit-mask-image: linear-gradient(270deg, #000 40%, transparent 100%); mask-image: linear-gradient(270deg, #000 40%, transparent 100%); }
+  .store-hero--duo .aesop-logo { font-size: 34px; }
+  .store-hero--duo .store-hero__line { font-size: 6.5px; letter-spacing: .12em; margin-top: 6px; }
   .campaign { grid-template-columns: 1fr; margin-top: 12px; }
   .campaign__art { order: -1; height: 260px; min-height: 0; }
   .campaign--photo .campaign__art { position: relative; inset: auto; }

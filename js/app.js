@@ -20,7 +20,7 @@
   const IMG = ['jpg', 'jpeg', 'webp', 'png', 'avif'];
   const VID = ['mp4', 'webm'];
   function loadAssets() {
-    ['hero', 'hero-band', 'banner-campaign', 'video-poster', 'banner-motion', 'brand-film-poster',
+    ['hero', 'hero-band', 'hero-band-left', 'banner-campaign', 'video-poster', 'banner-motion', 'brand-film-poster',
       'banner-hand-body', 'banner-fragrance', 'banner-for-the-home', 'banner-gifts',
       'cat-hand-body', 'cat-fragrance', 'cat-for-the-home', 'cat-gifts'
     ].forEach(k => { found[k] = pick('img/' + k, IMG); });
@@ -778,7 +778,15 @@
   const drawHero = () => {
     if (!found.heroVideo && !found['hero-band']) return;
     const hero = $('#heroArt');
-    hero.closest('.store-hero').classList.add('store-hero--photo');
+    const band = hero.closest('.store-hero');
+    // Two photos: one each side, both fading into a dark centre that holds the logo
+    if (!found.heroVideo && found['hero-band-left']) {
+      band.classList.add('store-hero--duo');
+      hero.innerHTML = `<img class="hero-duo hero-duo--left" src="${esc(found['hero-band-left'])}" alt="">`
+        + `<img class="hero-duo hero-duo--right" src="${esc(found['hero-band'])}" alt="">`;
+      return;
+    }
+    band.classList.add('store-hero--photo');
     hero.innerHTML = found.heroVideo ? coverVideo(found.heroVideo, found['hero-band']) : cover(found['hero-band']);
     const v = hero.querySelector('video');
     if (v && !reduceMotion.matches) v.play().catch(() => {});
