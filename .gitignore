@@ -1,0 +1,7 @@
+# Local tool settings and generated deploy copy
+.claude/
+dist/
+.vercel/
+.netlify/
+.DS_Store
+node_modules/

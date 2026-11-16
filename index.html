@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Student concept: keep it out of search engines so nobody mistakes it for a real store -->
+  <meta name="robots" content="noindex, nofollow">
+  <title>Aesop Store Concept on Amazon.fr</title>
+  <meta name="description" content="Student concept mock-up: what an official Aesop Brand Store on Amazon.fr could look like. Not affiliated with Aesop or Amazon.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Belleza&family=Cormorant+Garamond:wght@500&family=Hanken+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%237A3E12'/%3E%3Ctext x='16' y='23' font-family='Georgia' font-size='20' fill='%23FFFEF2' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
+</head>
+<body>
+
+  <!-- Shared SVG gradients/filters used by every product render (kept visible-but-empty so Chrome paints them) -->
+  <svg class="svg-defs" aria-hidden="true" focusable="false">
+    <defs>
+      <linearGradient id="g-amber" x1="0" x2="1">
+        <stop offset="0" stop-color="#2c1204"/>
+        <stop offset=".18" stop-color="#5e2c0c"/>
+        <stop offset=".38" stop-color="#8a4716"/>
+        <stop offset=".55" stop-color="#743a11"/>
+        <stop offset=".85" stop-color="#4a2209"/>
+        <stop offset="1" stop-color="#260f03"/>
+      </linearGradient>
+      <linearGradient id="g-amber-light" x1="0" x2="1">
+        <stop offset="0" stop-color="#5a2a08"/>
+        <stop offset=".3" stop-color="#b0601c"/>
+        <stop offset=".55" stop-color="#c77a2c"/>
+        <stop offset=".85" stop-color="#8e4a12"/>
+        <stop offset="1" stop-color="#4d2306"/>
+      </linearGradient>
+      <linearGradient id="g-black" x1="0" x2="1">
+        <stop offset="0" stop-color="#0a0a0a"/>
+        <stop offset=".35" stop-color="#3a3a3a"/>
+        <stop offset=".6" stop-color="#1b1b1b"/>
+        <stop offset="1" stop-color="#050505"/>
+      </linearGradient>
+      <linearGradient id="g-tube" x1="0" x2="1">
+        <stop offset="0" stop-color="#bdb29b"/>
+        <stop offset=".3" stop-color="#ece5d4"/>
+        <stop offset=".55" stop-color="#f4eee0"/>
+        <stop offset="1" stop-color="#b4a98f"/>
+      </linearGradient>
+      <linearGradient id="g-ivory" x1="0" x2="1">
+        <stop offset="0" stop-color="#c9bfa9"/>
+        <stop offset=".35" stop-color="#efe8d8"/>
+        <stop offset=".7" stop-color="#e3dac6"/>
+        <stop offset="1" stop-color="#b9ae96"/>
+      </linearGradient>
+      <linearGradient id="g-box" x1="0" x2="1">
+        <stop offset="0" stop-color="#d9cfba"/>
+        <stop offset="1" stop-color="#ebe3d1"/>
+      </linearGradient>
+      <linearGradient id="g-shine" x1="0" x2="1">
+        <stop offset="0" stop-color="#fff" stop-opacity="0"/>
+        <stop offset=".5" stop-color="#fff" stop-opacity=".55"/>
+        <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+      </linearGradient>
+      <radialGradient id="g-ground" cx=".5" cy=".5" r=".5">
+        <stop offset="0" stop-color="#000" stop-opacity=".28"/>
+        <stop offset="1" stop-color="#000" stop-opacity="0"/>
+      </radialGradient>
+      <linearGradient id="g-wall" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#efe5d4"/>
+        <stop offset=".6" stop-color="#e4d6c0"/>
+        <stop offset="1" stop-color="#d6c5aa"/>
+      </linearGradient>
+      <linearGradient id="g-wall-dark" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#3b2416"/>
+        <stop offset=".6" stop-color="#5a321a"/>
+        <stop offset="1" stop-color="#2a170c"/>
+      </linearGradient>
+      <linearGradient id="g-plinth" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#d4c6ae"/>
+        <stop offset="1" stop-color="#b8a78a"/>
+      </linearGradient>
+      <filter id="f-soft" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="7"/></filter>
+      <filter id="f-softer" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="18"/></filter>
+      <filter id="f-stone">
+        <feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="4" result="n"/>
+        <feColorMatrix in="n" type="matrix" values="0 0 0 0 .35  0 0 0 0 .29  0 0 0 0 .22  0 0 0 -1.4 .9"/>
+        <feComposite in2="SourceGraphic" operator="in"/>
+      </filter>
+    </defs>
+  </svg>
+
+  <a class="skip-link" href="#page">Skip to store content</a>
+
+  <!-- Concept ribbon: always visible so the mock can never be mistaken for the real thing -->
+  <div class="concept-bar" role="note">
+    <span><b>Student concept mock-up.</b> This is not Amazon.fr and not an official Aesop store. Nothing can be bought here and there is no sign-in.</span>
+    <button type="button" id="notesToggle" class="concept-bar__btn" aria-pressed="false">Show pitch notes</button>
+  </div>
+
+  <!-- ===== Amazon.fr site chrome ===== -->
+  <header class="amz-header">
+    <!-- Plain text label, not Amazon's logo: this is a concept, not a copy of the real site -->
+    <a class="amz-logo" href="#/" aria-label="Concept store home">
+      <span class="amz-logo__word">Amazon.fr</span><span class="amz-logo__tag">Concept</span>
+    </a>
+
+    <button class="amz-hdr-btn amz-deliver" type="button">
+      <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>
+      <span><small>Deliver to</small><b>Paris 75011</b></span>
+    </button>
+
+    <form class="amz-search" id="siteSearch" role="search">
+      <label class="visually-hidden" for="siteSearchCat">Search in</label>
+      <select id="siteSearchCat" class="amz-search__cat"><option>Beauty</option><option>All</option><option>Luxury Beauty</option></select>
+      <label class="visually-hidden" for="siteSearchInput">Search Amazon.fr</label>
+      <input id="siteSearchInput" class="amz-search__input" type="search" placeholder="Search Amazon.fr" autocomplete="off">
+      <button class="amz-search__go" type="submit" aria-label="Search">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="#131921" stroke-width="2.4"/><path d="M15.5 15.5 21 21" stroke="#131921" stroke-width="2.6" stroke-linecap="round"/></svg>
+      </button>
+    </form>
+
+    <button class="amz-hdr-btn amz-lang" type="button">
+      <svg viewBox="0 0 3 2" width="20" height="14" aria-hidden="true"><rect width="1" height="2" fill="#0055A4"/><rect x="1" width="1" height="2" fill="#fff"/><rect x="2" width="1" height="2" fill="#EF4135"/></svg>
+      <b>EN</b>
+    </button>
+    <!-- Display-only: no sign-in, account or checkout exists in this mock-up -->
+    <span class="amz-hdr-btn amz-account is-static"><span><small>Hello, guest</small><b>Account &amp; Lists</b></span></span>
+    <span class="amz-hdr-btn amz-orders is-static"><span><small>Returns</small><b>&amp; Orders</b></span></span>
+    <span class="amz-hdr-btn amz-basket is-static" aria-label="Basket (demo)">
+      <span class="amz-basket__icon">
+        <svg viewBox="0 0 40 30" width="40" height="30" aria-hidden="true"><path d="M2 4h6l5 16h18l4-11H11" fill="none" stroke="#fff" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/><circle cx="15" cy="25.5" r="2.4" fill="#fff"/><circle cx="28" cy="25.5" r="2.4" fill="#fff"/></svg>
+        <span class="amz-basket__count" id="basketCount">0</span>
+      </span>
+      <b>Basket</b>
+    </span>
+  </header>
+
+  <nav class="amz-subnav" aria-label="Amazon departments">
+    <a href="#/" class="amz-subnav__all"><svg viewBox="0 0 20 16" width="20" height="16" aria-hidden="true"><path d="M1 2h18M1 8h18M1 14h18" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>All</a>
+    <a href="#/">Today's Deals</a>
+    <a href="#/">Prime</a>
+    <a href="#/">Beauty</a>
+    <a href="#/">Luxury Beauty</a>
+    <a href="#/gifts">Gift Ideas</a>
+    <a href="#/">Best Sellers</a>
+    <a href="#/">Customer Service</a>
+    <span class="amz-subnav__promo">Christmas gifts, delivered tomorrow with Prime</span>
+  </nav>
+
+  <!-- ===== Brand Store ===== -->
+  <div class="store">
+    <!-- Brand band: the store logo header, like every Amazon Brand Store. Clicking it returns to the store home. -->
+    <a class="store-hero" href="#/" aria-label="Aesop store home">
+      <span class="store-hero__art" id="heroArt"></span>
+      <span class="store-hero__brand">
+        <span class="aesop-logo">A&#275;sop.</span>
+        <span class="store-hero__line">Melbourne · Since 1987</span>
+      </span>
+    </a>
+
+    <nav class="store-nav" id="storeNav" aria-label="Aesop store pages">
+      <div class="store-nav__inner">
+        <button type="button" class="store-nav__follow" id="followBtn" aria-pressed="false">Follow</button>
+        <ul class="store-nav__tabs" id="storeTabs" role="list"></ul>
+        <form class="store-nav__search" id="storeSearch" role="search">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M15.5 15.5 21 21" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+          <label class="visually-hidden" for="storeSearchInput">Search all Aesop</label>
+          <input id="storeSearchInput" type="search" placeholder="Search all Aesop" autocomplete="off">
+        </form>
+      </div>
+    </nav>
+
+    <main id="page" class="page" tabindex="-1"></main>
+
+    <section class="store-share" aria-label="Share">
+      <button type="button" class="pill-btn" id="shareBtn">
+        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 3v12M7 8l5-5 5 5M5 13v7h14v-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Share
+      </button>
+      <p>Share this page with your team.</p>
+    </section>
+  </div>
+
+  <!-- ===== Amazon.fr footer ===== -->
+  <footer class="amz-footer">
+    <a href="#top" class="amz-footer__top" id="backToTop">Back to top</a>
+    <div class="amz-footer__cols">
+      <div><h2>Get to Know Us</h2><ul role="list"><li>About Amazon</li><li>Careers</li><li>Sustainability</li><li>Amazon Science</li></ul></div>
+      <div><h2>Make Money with Us</h2><ul role="list"><li>Sell on Amazon</li><li>Supply to Amazon (Vendor)</li><li>Brand Registry</li><li>Advertise Your Products</li></ul></div>
+      <div><h2>Amazon Payment Methods</h2><ul role="list"><li>Payment Methods Help</li><li>Payment in instalments</li><li>Gift Cards</li></ul></div>
+      <div><h2>Let Us Help You</h2><ul role="list"><li>Track Packages or View Orders</li><li>Delivery Rates &amp; Policies</li><li>Amazon Prime</li><li>Returns &amp; Replacements</li></ul></div>
+    </div>
+    <div class="amz-footer__mid">
+      <span class="amz-logo amz-logo--small" aria-hidden="true"><span class="amz-logo__word">Amazon.fr</span><span class="amz-logo__tag">Concept</span></span>
+      <span class="amz-footer__chip">English</span>
+      <span class="amz-footer__chip">France</span>
+    </div>
+    <div class="amz-footer__legal">
+      <p class="amz-footer__disclaimer">Student concept – not affiliated with Aesop or Amazon.</p>
+      <p>A mock-up made for a Global Digital Marketing class pitch (KEDGE Business School, Group 7). Brand names belong to their owners and are used here only to illustrate the proposal. Product photos are Aesop's own, shown for illustration. Ratings are placeholders. Prices are taken from aesop.fr.</p>
+    </div>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="js/assets.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/art.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
