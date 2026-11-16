@@ -475,6 +475,11 @@ ul, ol { margin: 0; padding: 0; }
 .pdp__thumb img { width: 100%; height: 100%; object-fit: cover; mix-blend-mode: normal; }
 .aplus__photo { position: absolute; right: 8%; bottom: 0; height: 92%; width: auto; max-width: 40%; object-fit: contain; mix-blend-mode: multiply; }
 
+/* ---------- brand film ---------- */
+.film__frame { position: relative; aspect-ratio: 16 / 9; max-width: 1240px; margin: 0 auto; overflow: hidden; background: #1E1813; }
+.film__video { display: block; width: 100%; height: 100%; object-fit: cover; }
+.vbanner__toggle.film__sound { right: 72px; }
+
 /* ---------- video banner ---------- */
 .vbanner { position: relative; margin-top: 56px; height: clamp(340px, 38vw, 560px); overflow: hidden; background: var(--ae-sand); }
 .vbanner__media { position: absolute; inset: 0; transform-origin: 72% 65%; animation: vb-push 22s ease-in-out infinite alternate; }

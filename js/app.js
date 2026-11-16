@@ -20,7 +20,7 @@
   const IMG = ['jpg', 'jpeg', 'webp', 'png', 'avif'];
   const VID = ['mp4', 'webm'];
   function loadAssets() {
-    ['hero', 'hero-band', 'banner-campaign', 'video-poster', 'banner-motion',
+    ['hero', 'hero-band', 'banner-campaign', 'video-poster', 'banner-motion', 'brand-film-poster',
       'banner-hand-body', 'banner-fragrance', 'banner-for-the-home', 'banner-gifts',
       'cat-hand-body', 'cat-fragrance', 'cat-for-the-home', 'cat-gifts'
     ].forEach(k => { found[k] = pick('img/' + k, IMG); });
@@ -32,6 +32,7 @@
     found.heroVideo = pick('video/hero', VID);
     found.bannerVideo = pick('video/banner', VID);
     found.giftVideo = pick('video/gift-guide', VID);
+    found.brandFilm = pick('video/brand-film', VID);
   }
   const cover = (src, cls = '') => `<img class="media-cover ${cls}" src="${esc(src)}" alt="" loading="lazy">`;
   const coverVideo = (src, poster) => `<video class="media-cover" src="${esc(src)}" ${poster ? `poster="${esc(poster)}"` : ''} muted loop playsinline ${reduceMotion.matches ? '' : 'autoplay'} preload="metadata" aria-hidden="true"></video>`;
@@ -154,6 +155,25 @@
     </section>`;
   }
 
+  /* ---------- brand film (Amazon Stores video tile: plays muted, with pause and sound controls) ---------- */
+
+  const soundOffIcon = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="m16 9 5 6m0-6-5 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+  const soundOnIcon = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+
+  function brandFilm() {
+    const still = reduceMotion.matches;
+    const poster = found['brand-film-poster'];
+    return `<section class="block film" aria-label="Aesop brand film">
+      <div class="block__head"><h2 class="block__title">For your hands. For you.</h2></div>
+      <div class="film__frame" data-video-host>
+        <video class="film__video" src="${esc(found.brandFilm)}" ${poster ? `poster="${esc(poster)}"` : ''} muted loop playsinline ${still ? '' : 'autoplay'} preload="metadata"
+          aria-label="Aesop film: hand wash, fragrance and serum. Now sold by Amazon, delivered with Prime."></video>
+        <button type="button" class="vbanner__toggle" data-video-toggle aria-label="${still ? 'Play video' : 'Pause video'}">${still ? playIcon : pauseIcon}</button>
+        <button type="button" class="vbanner__toggle film__sound" data-video-sound aria-label="Turn sound on">${soundOffIcon}</button>
+      </div>
+    </section>`;
+  }
+
   /* ---------- pages ---------- */
 
   const pages = {};
@@ -232,7 +252,7 @@
         </div>
       </section>
 
-      ${videoBanner()}
+      ${found.brandFilm ? brandFilm() : videoBanner()}
 
       <section class="block">
         <div class="block__head"><h2 class="block__title">Explore the store</h2></div>
@@ -710,6 +730,16 @@
       const views = $('#pdpViews').content.children;
       $('#pdpMain').innerHTML = views[Number(thumb.dataset.view)].innerHTML;
       document.querySelectorAll('.pdp__thumb').forEach(t => t.setAttribute('aria-selected', t === thumb));
+      return;
+    }
+
+    const vs = e.target.closest('[data-video-sound]');
+    if (vs) {
+      const video = vs.closest('[data-video-host]').querySelector('video');
+      video.muted = !video.muted;
+      if (!video.muted && video.paused) video.play().catch(() => {});
+      vs.setAttribute('aria-label', video.muted ? 'Turn sound on' : 'Turn sound off');
+      vs.innerHTML = video.muted ? soundOffIcon : soundOnIcon;
       return;
     }
 

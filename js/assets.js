@@ -6,6 +6,7 @@ window.ASSETS = [
   "img/banner-gifts.webp",
   "img/banner-hand-body.webp",
   "img/banner-motion.webp",
+  "img/brand-film-poster.webp",
   "img/cat-for-the-home.webp",
   "img/cat-fragrance.webp",
   "img/cat-gifts.webp",
@@ -31,5 +32,6 @@ window.ASSETS = [
   "img/products/reverence-hand-wash.webp",
   "img/products/reverence-refill.webp",
   "img/products/tacit.webp",
-  "img/products/trusted-companions.webp"
+  "img/products/trusted-companions.webp",
+  "video/brand-film.mp4"
 ];
