@@ -166,11 +166,16 @@ ul, ol { margin: 0; padding: 0; }
 }
 .store-hero:hover { text-decoration: none; color: #F3E9D8; }
 .store-hero__art, .store-hero__art > * { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.store-hero--photo::after {
-  content: ""; position: absolute; inset: 0;
-  background: radial-gradient(ellipse at 50% 50%, rgba(28, 16, 8, .38) 0%, rgba(28, 16, 8, .62) 75%);
+/* With a photo the band splits: logo on the brand texture (left), product photo uncropped and undimmed (right) */
+.store-hero--photo { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); place-items: stretch; }
+.store-hero--photo .store-hero__brand { align-self: center; justify-self: center; }
+.store-hero--photo .store-hero__art { position: relative; inset: auto; order: 2; }
+.store-hero--photo .store-hero__art > * { object-position: 50% 50%; }
+/* Soft fade so the photo melts into the brand texture instead of a hard seam */
+.store-hero--photo .store-hero__art::before {
+  content: ""; position: absolute; inset: 0 auto 0 0; width: 22%; z-index: 1; pointer-events: none;
+  background: linear-gradient(90deg, var(--band), rgba(74, 44, 25, 0));
 }
-.store-hero--photo .store-hero__art img { object-position: 50% 62%; }
 .store-hero__brand { position: relative; z-index: 2; display: grid; justify-items: center; text-align: center; }
 .aesop-logo {
   display: block; font-family: var(--f-logo); font-weight: 500;
@@ -808,8 +813,9 @@ ul, ol { margin: 0; padding: 0; }
 @media (max-width: 640px) {
   .amz-header { flex-wrap: wrap; padding: 6px 8px 8px; }
   .amz-search { order: 5; flex-basis: 100%; margin: 6px 0 0; }
-  .amz-account { margin-left: auto; }
-  .amz-account small { display: none; }
+  .amz-account { display: none; }
+  .amz-basket { margin-left: auto; }
+  .amz-logo__word { font-size: 20px; }
   .amz-basket b { display: none; }
   .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 12px; }
   .carousel__track { grid-auto-columns: 46%; gap: 12px; }
@@ -821,6 +827,8 @@ ul, ol { margin: 0; padding: 0; }
   .store-hero { height: 170px; margin-top: 12px; }
   .store-hero .aesop-logo { font-size: 64px; }
   .store-hero__line { margin-top: 8px; font-size: 11px; letter-spacing: .26em; }
+  .store-hero--photo .aesop-logo { font-size: 46px; }
+  .store-hero--photo .store-hero__line { font-size: 8.5px; letter-spacing: .18em; }
   .campaign { grid-template-columns: 1fr; margin-top: 12px; }
   .campaign__art { order: -1; height: 260px; min-height: 0; }
   .campaign--photo .campaign__art { position: relative; inset: auto; }
