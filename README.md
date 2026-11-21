@@ -91,10 +91,9 @@ ffmpeg -i input.mov -an -vf "scale=1600:-2" -c:v libx264 -crf 28 -preset slow -p
 
 ## Prices: check before the pitch
 
-Most prices come from aesop.fr (November 2026), including the 2026 gift kits read from aesop.fr's own product data. Two are still marked `check:` in `js/data.js`:
+Most prices come from aesop.fr (November 2026), including the 2026 gift kits read from aesop.fr's own product data. One is still marked `check:` in `js/data.js`:
 
 - Reverence Aromatique Hand Wash Refill 500 mL: €38 (the aesop.ie refill price)
-- Geranium Leaf Body Cleanser 500 mL: €59 (from a search result)
 
 Star ratings and review counts are placeholders.
 
