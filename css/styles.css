@@ -1027,6 +1027,34 @@ a.add-btn, a.pill-btn { text-align: center; text-decoration: none; color: var(--
 .reviews__note h3 { font-size: 18px; font-weight: 700; }
 .reviews__fine { font-size: 12.5px; color: var(--amz-muted); }
 
+/* Product photos: "+N" tile, clickable main photo, full-view viewer */
+.pdp__thumb { position: relative; cursor: pointer; }
+.pdp__more { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(255, 255, 255, .74); color: var(--amz-ink); font: 700 14px var(--f-amz); }
+.pdp__thumb--more:hover .pdp__more { background: rgba(255, 255, 255, .6); }
+button.pdp__main { display: block; width: 100%; border: 0; font: inherit; color: inherit; cursor: zoom-in; }
+.pdp__hint { grid-column: 2; margin-top: -6px; text-align: center; font: 12px var(--f-amz); color: #565959; }
+
+.panel--viewer { left: 50%; top: 50%; width: min(1180px, calc(100vw - 32px)); height: min(820px, calc(100vh - 48px)); display: flex; flex-direction: column; overflow: hidden; border-radius: 8px; transform: translate(-50%, -48%); opacity: 0; transition: transform .2s ease, opacity .2s ease; }
+.is-open .panel--viewer { transform: translate(-50%, -50%); opacity: 1; }
+.viewer { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) 300px; }
+.viewer--single { grid-template-columns: minmax(0, 1fr) 260px; }
+.viewer__stage { position: relative; min-height: 0; display: grid; grid-template-rows: minmax(0, 1fr); padding: 24px 76px; }
+.viewer__img { min-height: 0; height: 100%; overflow: hidden; }
+.viewer__img > img, .viewer__img > svg, .viewer__img > .pimg-zoom { width: 100%; height: 100%; max-width: none; object-fit: contain; mix-blend-mode: normal; }
+.viewer__img > .pimg--scene { position: static; }
+.viewer__nav { position: absolute; top: 50%; width: 44px; height: 68px; display: grid; place-items: center; transform: translateY(-50%); background: #fff; color: var(--amz-ink); border: 1px solid #D5D9D9; border-radius: 8px; box-shadow: 0 2px 5px rgba(15, 17, 17, .15); cursor: pointer; }
+.viewer__nav:hover { background: #F7FAFA; border-color: #A2A6A6; }
+.viewer__nav--prev { left: 16px; }
+.viewer__nav--next { right: 16px; }
+.viewer__side { min-height: 0; overflow-y: auto; display: grid; align-content: start; gap: 8px; padding: 20px; border-left: 1px solid #D5D9D9; }
+.viewer__title { font-size: 16px; line-height: 1.35; color: var(--amz-ink); }
+.viewer__count { font-size: 13px; color: #565959; margin-bottom: 6px; }
+.viewer__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.viewer__thumb { aspect-ratio: 1; padding: 3px; background: var(--amz-tile); border: 1px solid #D5D9D9; border-radius: 6px; overflow: hidden; cursor: pointer; }
+.viewer__thumb > img, .viewer__thumb > svg, .viewer__thumb > .pimg-zoom { width: 100%; height: 100%; object-fit: cover; mix-blend-mode: normal; }
+.viewer__thumb:hover { border-color: #A2A6A6; }
+.viewer__thumb[aria-current="true"] { border-color: #E77600; box-shadow: 0 0 3px 2px rgba(228, 121, 17, .5); }
+
 @media (max-width: 1200px) {
   .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .carousel__track { grid-auto-columns: calc((100% - 3 * 20px) / 4); }
@@ -1069,6 +1097,21 @@ a.add-btn, a.pill-btn { text-align: center; text-decoration: none; color: var(--
 }
 
 @media (max-width: 640px) {
+  .panel--viewer { width: 100vw; height: 100dvh; border-radius: 0; }
+  .pdp__gallery { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+  .pdp__main { order: 1; }
+  .pdp__thumbs { order: 2; grid-auto-flow: column; grid-auto-columns: 52px; overflow-x: auto; padding: 4px 3px 6px; }
+  .pdp__hint { display: none; }
+  .viewer, .viewer--single { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; }
+  .viewer__stage { padding: 12px 52px; }
+  .viewer__nav { width: 36px; height: 56px; }
+  .viewer__nav--prev { left: 8px; }
+  .viewer__nav--next { right: 8px; }
+  .viewer__side { border-left: 0; border-top: 1px solid #D5D9D9; padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); overflow: visible; }
+  .viewer__title { display: none; }
+  .viewer__count { margin: 0; }
+  .viewer__grid { grid-auto-flow: column; grid-template-columns: none; grid-auto-columns: 60px; overflow-x: auto; padding-bottom: 4px; }
+
   .amz-header { flex-wrap: wrap; padding: 6px 8px 8px; }
   .amz-search { order: 5; flex-basis: 100%; margin: 6px 0 0; }
   .amz-account { display: none; }

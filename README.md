@@ -44,6 +44,7 @@ Every header, menu and product button works the way it does on Amazon:
 | Search boxes | Live suggestions as you type (arrow keys + Enter) |
 | Product tiles | Add to basket opens the "Added to basket" panel; the eye opens Quick look |
 | Product page | Quantity, Subscribe & refill, gift options, Buy Now, Add to List, customer reviews |
+| Product photos | Hover a thumbnail to swap the photo; up to 7 thumbnails, then "+N"; click the photo for the full view (arrows, ← → keys, thumbnail grid, Esc) |
 
 Concept demo: there is **no sign-in and no payment form**. Checkout uses "Pay on delivery (demo)". The basket, lists, orders, postcode and language are saved in the visitor's own browser (localStorage), so they survive a refresh but are never sent anywhere.
 
@@ -71,7 +72,7 @@ Out of the box, every image is an SVG illustration and the video banner is an an
 | Home category tiles | `img/cat-hand-body.jpg`, `img/cat-fragrance.jpg`, `img/cat-for-the-home.jpg`, `img/cat-gifts.jpg` | about square |
 | Product photos | `img/products/<product-id>.jpg`, e.g. `img/products/marrakech-intense.jpg` | about 5:6, plain light background |
 
-Product ids: `reverence-hand-wash`, `resurrection-hand-wash`, `resurrection-hand-balm`, `trusted-companions`, `reverence-refill`, `geranium-body-cleanser`, `evergreen-affections`, `marrakech-intense`, `hwyl`, `tacit`, `karst`, `post-poo-drops`, `cythera-room-spray`, `olous-room-spray`, `ptolemy-candle`, `arms-outstretched`, `gentle-embraces`. Extra listing photos: `img/products/<product-id>-2.webp`, `-3.webp`.
+Product ids: `reverence-hand-wash`, `resurrection-hand-wash`, `resurrection-hand-balm`, `trusted-companions`, `reverence-refill`, `geranium-body-cleanser`, `evergreen-affections`, `marrakech-intense`, `hwyl`, `tacit`, `karst`, `post-poo-drops`, `cythera-room-spray`, `olous-room-spray`, `ptolemy-candle`, `arms-outstretched`, `gentle-embraces`. Extra gallery photos: `img/products/<product-id>-2.webp` up to `-9.webp`, shown in that order after the main photo.
 
 You can use `.jpg`, `.png`, `.webp` or `.avif` for images, and `.mp4` or `.webm` for video. Then run:
 
@@ -99,4 +100,4 @@ Star ratings and review counts are placeholders.
 
 ## Where the photos came from
 
-Product and campaign photos are Aesop's own. They were taken from Internet Archive snapshots of aesop.fr and aesop.ie, because aesop.fr blocks automated access. The homepage film is hosted on Flowplayer and couldn't be downloaded, so the home banner uses a still with slow camera motion. Fonts are free stand-ins: Optima-style headings for Aesop's Zapf Humanist, and Hanken Grotesk for Suisse Int'l.
+Product and campaign photos are Aesop's own. They were taken from Internet Archive snapshots of aesop.fr, aesop.ie, aesop.de, aesop.co.uk, aesop.dk and aesop.it (same Aesop photo library), because aesop.fr blocks automated access. The homepage film is hosted on Flowplayer and couldn't be downloaded, so the home banner uses a still with slow camera motion. Fonts are free stand-ins: Optima-style headings for Aesop's Zapf Humanist, and Hanken Grotesk for Suisse Int'l.

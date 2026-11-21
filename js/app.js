@@ -27,7 +27,7 @@
     products.forEach(p => {
       if (!p.photo) p.photo = pick('img/products/' + p.id, IMG);
       // Extra listing views: <id>-2, <id>-3 ...
-      p.gallery = [2, 3, 4, 5].map(n => pick(`img/products/${p.id}-${n}`, IMG)).filter(Boolean);
+      p.gallery = [2, 3, 4, 5, 6, 7, 8, 9].map(n => pick(`img/products/${p.id}-${n}`, IMG)).filter(Boolean);
     });
     found.heroVideo = pick('video/hero', VID);
     found.bannerVideo = pick('video/banner', VID);
@@ -519,22 +519,32 @@
     const related = products.filter(x => x.id !== p.id && (x.cat === p.cat || x.gift)).slice(0, 8);
     const views = p.photo ? [
       productSVG(p),
-      ...p.gallery.map(g => `<img class="pimg pimg--scene" src="${esc(g)}" alt="" loading="lazy">`),
-      `<div class="pimg-zoom">${productSVG(p, { decorative: true })}</div>`
+      ...p.gallery.map((g, i) => `<img class="pimg pimg--scene" src="${esc(g)}" alt="${esc(p.name)}, view ${i + 2}" loading="lazy">`),
+      // A zoomed crop only when there are no real extra photos to show
+      ...(p.gallery.length ? [] : [`<div class="pimg-zoom">${productSVG(p, { decorative: true })}</div>`])
     ] : [
       productSVG(p),
       `<svg viewBox="0 0 300 360" class="pimg" aria-hidden="true"><g transform="translate(-150 -230) scale(2)">${window.ART.productGroup(p)}</g></svg>`,
       scene({ w: 600, h: 720, product: p, px: 0.5, scale: 1.2, plinthW: 380, withVase: true })
     ];
+    // Like Amazon: up to 7 thumbnails, the last one turns into "+N" and opens the full view
+    const MAX_THUMBS = 7;
+    const shown = views.length > MAX_THUMBS ? MAX_THUMBS - 1 : views.length;
+    const thumbs = views.slice(0, shown).map((v, i) =>
+      `<button type="button" class="pdp__thumb" role="tab" aria-selected="${i === 0}" data-view="${i}" aria-label="Image ${i + 1} of ${views.length}">${v}</button>`).join('')
+      + (views.length > shown
+        ? `<button type="button" class="pdp__thumb pdp__thumb--more" data-viewer="${shown}" aria-label="See all ${views.length} images">${views[shown]}<span class="pdp__more" aria-hidden="true">+${views.length - shown}</span></button>`
+        : '');
     return `
       ${pitchNote('product')}
       <nav class="crumbs" aria-label="Breadcrumb"><a href="#/">Beauty</a> › <a href="#/">Luxury Beauty</a> › <a href="#/${p.cat === 'fragrance' ? 'fragrance' : p.cat === 'home' ? 'for-the-home' : p.cat === 'gift' ? 'gifts' : 'hand-body'}">${crumbs[p.cat]}</a></nav>
       <section class="pdp">
         <div class="pdp__gallery">
           <div class="pdp__thumbs" role="tablist" aria-label="Product images">
-            ${views.map((v, i) => `<button type="button" class="pdp__thumb" role="tab" aria-selected="${i === 0}" data-view="${i}" aria-label="Image ${i + 1}">${v}</button>`).join('')}
+            ${thumbs}
           </div>
-          <div class="pdp__main" id="pdpMain">${views[0]}</div>
+          <button type="button" class="pdp__main" id="pdpMain" data-viewer="0" aria-label="Open full view of image 1">${views[0]}</button>
+          <p class="pdp__hint">Click image to open expanded view</p>
           <template id="pdpViews">${views.map(v => `<div>${v}</div>`).join('')}</template>
         </div>
 
@@ -735,7 +745,10 @@
     const thumb = e.target.closest('[data-view]');
     if (thumb) {
       const views = $('#pdpViews').content.children;
-      $('#pdpMain').innerHTML = views[Number(thumb.dataset.view)].innerHTML;
+      const main = $('#pdpMain'), n = Number(thumb.dataset.view);
+      main.innerHTML = views[n].innerHTML;
+      main.dataset.viewer = n;
+      main.setAttribute('aria-label', `Open full view of image ${n + 1}`);
       document.querySelectorAll('.pdp__thumb').forEach(t => t.setAttribute('aria-selected', t === thumb));
       return;
     }

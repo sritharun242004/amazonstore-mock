@@ -318,6 +318,53 @@
   attachSuggest($('#siteSearchInput'));
   attachSuggest($('#storeSearchInput'));
 
+  /* ---------- full-view image viewer (product page) ---------- */
+
+  const chevron = dir => `<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="${dir < 0 ? 'M15 5l-7 7 7 7' : 'M9 5l7 7-7 7'}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  let viewer = null;
+
+  function openViewer(start) {
+    const tpl = document.getElementById('pdpViews');
+    if (!tpl) return;
+    const views = [...tpl.content.children].map(v => v.innerHTML);
+    const title = document.querySelector('.pdp__title')?.textContent.trim() || 'Product images';
+    const one = views.length < 2;
+    openPanel(`
+      ${head('Images')}
+      <div class="viewer${one ? ' viewer--single' : ''}">
+        <div class="viewer__stage">
+          ${one ? '' : `<button type="button" class="viewer__nav viewer__nav--prev" data-viewer-step="-1" aria-label="Previous image">${chevron(-1)}</button>`}
+          <div class="viewer__img" id="viewerImg"></div>
+          ${one ? '' : `<button type="button" class="viewer__nav viewer__nav--next" data-viewer-step="1" aria-label="Next image">${chevron(1)}</button>`}
+        </div>
+        <aside class="viewer__side">
+          <p class="viewer__title">${esc(title)}</p>
+          <p class="viewer__count" id="viewerCount" aria-live="polite"></p>
+          <div class="viewer__grid">
+            ${views.map((v, n) => `<button type="button" class="viewer__thumb" data-viewer-go="${n}" aria-label="Image ${n + 1}">${v}</button>`).join('')}
+          </div>
+        </aside>
+      </div>`, { kind: 'viewer', label: `${title}, images` });
+    viewer = { views };
+    showView(start);
+  }
+
+  function showView(n) {
+    if (!viewer || layer.hidden) return;
+    const len = viewer.views.length;
+    viewer.i = ((n % len) + len) % len;
+    $('#viewerImg').innerHTML = viewer.views[viewer.i];
+    $('#viewerCount').textContent = `Image ${viewer.i + 1} of ${len}`;
+    layer.querySelectorAll('.viewer__thumb').forEach((b, k) => b.setAttribute('aria-current', k === viewer.i));
+    layer.querySelector('.viewer__thumb[aria-current="true"]')?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+  }
+
+  document.addEventListener('keydown', e => {
+    if (!viewer || layer.hidden || !layer.querySelector('.viewer')) return;
+    if (e.key === 'ArrowRight') { e.preventDefault(); showView(viewer.i + 1); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); showView(viewer.i - 1); }
+  });
+
   /* ---------- clicks ---------- */
 
   document.addEventListener('click', e => {
@@ -335,6 +382,13 @@
         return;
       }
     }
+
+    const view = t.closest('[data-viewer]');
+    if (view) { e.preventDefault(); openViewer(Number(view.dataset.viewer) || 0); return; }
+    const step = t.closest('[data-viewer-step]');
+    if (step) { showView(viewer.i + Number(step.dataset.viewerStep)); return; }
+    const go = t.closest('[data-viewer-go]');
+    if (go) { showView(Number(go.dataset.viewerGo)); return; }
 
     const quick = t.closest('[data-quick]');
     if (quick) { e.preventDefault(); openQuickLook(byId(quick.dataset.quick)); return; }
