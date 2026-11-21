@@ -614,22 +614,24 @@
     const p3 = Math.round((100 - p5 - p4) * 0.55);
     const p2 = Math.round((100 - p5 - p4 - p3) * 0.5);
     const bars = [[5, p5], [4, p4], [3, p3], [2, p2], [1, 100 - p5 - p4 - p3 - p2]];
+    const mine = window.STORE.myReview?.(p.id);
     return `<section class="reviews" id="reviews">
       <h2 class="block__title">Customer reviews</h2>
       <div class="reviews__grid">
         <div class="reviews__summary">
           ${stars(p, false)}
           <p class="reviews__avg">${p.rating.toFixed(1)} out of 5</p>
-          <p class="reviews__total">${p.reviews.toLocaleString('en-GB')} global ratings</p>
+          <p class="reviews__total">${(p.reviews + (mine ? 1 : 0)).toLocaleString('en-GB')} global ratings</p>
           <table class="reviews__bars"><tbody>${bars.map(([n, pct]) => `<tr><th scope="row">${n} star</th><td><span class="reviews__bar"><span style="width:${pct}%"></span></span></td><td>${pct}%</td></tr>`).join('')}</tbody></table>
         </div>
         <div class="reviews__note">
           <h3>Review this product</h3>
           <p>Share your thoughts with other customers.</p>
-          <button type="button" class="pill-btn pill-btn--wide" data-write-review="${p.id}">Write a product review</button>
-          <p class="reviews__fine">Ratings shown are placeholders for this concept. Written reviews appear once the official store launches.</p>
+          <a class="pill-btn pill-btn--wide" href="#/review/${p.id}">${mine ? 'Edit your review' : 'Write a product review'}</a>
+          <p class="reviews__fine">Star ratings are placeholders for this concept. Reviews written here are saved in this browser only.</p>
         </div>
       </div>
+      ${window.STORE.reviewsList?.(p) || ''}
     </section>`;
   }
 

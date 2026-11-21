@@ -24,9 +24,11 @@
     orders: load('orders', []),
     zip: load('zip', '75011'),
     lang: load('lang', 'EN'),
-    follow: load('follow', false)
+    follow: load('follow', false),
+    reviews: load('reviews', {}),                          // { [id]: { rating, title, body, name, date } }
+    reviewName: load('reviewName', 'Amazon Customer')
   };
-  const persist = () => ['cart', 'saved', 'list', 'orders', 'zip', 'lang', 'follow'].forEach(k => save(k, state[k]));
+  const persist = () => ['cart', 'saved', 'list', 'orders', 'zip', 'lang', 'follow', 'reviews', 'reviewName'].forEach(k => save(k, state[k]));
 
   const eur = n => '€' + n.toFixed(2);
   const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`;
@@ -487,13 +489,16 @@
         persist(); closePanel(false); refresh();
         toast('<b>Order cancelled</b> No charge was made.');
       }
+      if (action === 'review') {
+        delete state.reviews[id];
+        persist(); closePanel(false); S.render();
+        toast('<b>Review deleted</b>');
+      }
       return;
     }
 
-    if (t.closest('[data-write-review]')) {
-      toast('<b>Reviews open at launch</b> Customers can review once the official store is live.');
-      return;
-    }
+    const delReview = t.closest('[data-del-review]');
+    if (delReview) { confirmPanel('Delete your review?', 'Your review and star rating will be removed from this product.', `review:${delReview.dataset.delReview}`, 'Delete review'); return; }
   });
 
   // Follow persists between visits (app.js flips the button; this keeps the state)
@@ -577,6 +582,114 @@
         <div class="panel__actions"><button type="button" class="pill-btn" data-close>Cancel</button><button type="submit" class="add-btn">Continue</button></div>
       </form>`, { label: 'Return or replace items' });
   }
+  /* ---------- customer reviews (written in this browser) ---------- */
+
+  const reviewDate = iso => new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+  const bought = id => state.orders.some(o => o.items.some(l => l.id === id));
+  const starsOf = n => `<span class="stars" role="img" aria-label="${n} out of 5 stars"><span class="stars__fill" style="width:${n * 20}%"></span></span>`;
+  const starIcon = '<svg viewBox="0 0 20 20" width="34" height="34" aria-hidden="true"><path d="M10 1.5l2.6 5.5 6 .7-4.5 4.1 1.2 6-5.3-3-5.3 3 1.2-6L1.4 7.7l6-.7z" stroke-width="1.1" stroke-linejoin="round"/></svg>';
+  const personIcon = '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="12" cy="12" r="12" fill="#D5D9D9"/><circle cx="12" cy="9.5" r="4" fill="#fff"/><path d="M4.5 19.5c1.6-3.2 4.3-4.8 7.5-4.8s5.9 1.6 7.5 4.8" fill="#fff"/></svg>';
+
+  // Used by the product page (app.js) to show reviews written here
+  S.myReview = id => state.reviews[id] || null;
+  S.reviewsList = p => {
+    const r = state.reviews[p.id];
+    if (!r) return '';
+    return `<div class="reviews__list">
+      <h3>Top reviews from France</h3>
+      <article class="review">
+        <p class="review__who">${personIcon}<span>${esc(r.name)}</span></p>
+        <p class="review__head">${starsOf(r.rating)} <b>${esc(r.title)}</b></p>
+        <p class="review__meta">Reviewed in France on ${reviewDate(r.date)}${r.edited ? ' · Edited' : ''}</p>
+        ${bought(p.id) ? '<p class="review__verified">Verified Purchase</p>' : ''}
+        <p class="review__body">${esc(r.body).replace(/\n/g, '<br>')}</p>
+        <div class="review__actions">
+          <a class="pill-btn pill-btn--sm" href="#/review/${p.id}">Edit</a>
+          <button type="button" class="pill-btn pill-btn--sm" data-del-review="${p.id}">Delete</button>
+        </div>
+      </article>
+    </div>`;
+  };
+
+  pages.review = id => {
+    const p = byId(id);
+    if (!p) return `<section class="empty"><h1>This product is not in the store</h1><p><a href="#/">Go back to the Aesop store home</a></p></section>`;
+    const r = state.reviews[id] || {};
+    const err = (key, text) => `<p class="field-error" id="err-${key}" hidden><svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><circle cx="8" cy="8" r="7.5" fill="#C40000"/><path d="M8 4v5" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/><circle cx="8" cy="11.6" r="1" fill="#fff"/></svg>${text}</p>`;
+    return `<section class="review-page">
+      <h1>${r.rating ? 'Edit your review' : 'Create review'}</h1>
+      <a class="review-page__product" href="#/p/${p.id}"><span class="review-page__img">${productSVG(p, { decorative: true })}</span><span>Aesop ${esc(p.name)}, ${esc(p.size)}</span></a>
+      <form class="review-form" data-review-form="${p.id}" novalidate>
+        <fieldset class="review-form__row" aria-describedby="err-rating">
+          <legend>Overall rating</legend>
+          <div class="star-input" data-show="${r.rating || 0}">
+            ${[1, 2, 3, 4, 5].map(n => `<input class="visually-hidden" type="radio" id="rate${n}" name="rating" value="${n}"${r.rating === n ? ' checked' : ''}><label for="rate${n}" data-star="${n}" title="${n} star${n > 1 ? 's' : ''}">${starIcon}<span class="visually-hidden">${n} star${n > 1 ? 's' : ''}</span></label>`).join('')}
+          </div>
+          ${err('rating', 'Please select a star rating')}
+        </fieldset>
+        <div class="review-form__row">
+          <label for="rvTitle">Add a headline</label>
+          <input id="rvTitle" name="title" maxlength="100" autocomplete="off" placeholder="What's most important to know?" value="${esc(r.title || '')}" aria-describedby="err-title">
+          ${err('title', 'Please enter your headline')}
+        </div>
+        <div class="review-form__row">
+          <label for="rvBody">Add a written review</label>
+          <textarea id="rvBody" name="body" rows="6" maxlength="2000" placeholder="What did you like or dislike? How did you use this product?" aria-describedby="err-body">${esc(r.body || '')}</textarea>
+          ${err('body', 'Please add a written review')}
+        </div>
+        <div class="review-form__row">
+          <label for="rvName">Choose your public name</label>
+          <p class="review-form__hint" id="hint-name">This is how you'll appear to other customers</p>
+          <input id="rvName" name="name" maxlength="50" autocomplete="nickname" value="${esc(r.name || state.reviewName)}" aria-describedby="hint-name">
+        </div>
+        <div class="review-form__actions">
+          <button type="submit" class="add-btn">Submit</button>
+          <a href="#/p/${p.id}/reviews">Cancel</a>
+        </div>
+        <p class="review-form__fine">Concept demo: your review is saved in this browser only and is not sent anywhere.</p>
+      </form>
+    </section>`;
+  };
+
+  // Stars light up on hover and stay on the chosen rating
+  document.addEventListener('mouseover', e => {
+    const star = e.target.closest('.star-input [data-star]');
+    if (star) star.parentElement.dataset.show = star.dataset.star;
+  });
+  document.addEventListener('mouseout', e => {
+    const box = e.target.closest('.star-input');
+    if (box && !box.contains(e.relatedTarget)) box.dataset.show = box.querySelector('input:checked')?.value || 0;
+  });
+  document.addEventListener('change', e => {
+    if (!e.target.matches('.star-input input')) return;
+    e.target.parentElement.dataset.show = e.target.value;
+    const form = e.target.form;
+    form.querySelector('#err-rating').hidden = true;
+  });
+
+  document.addEventListener('submit', e => {
+    const form = e.target.closest('[data-review-form]');
+    if (!form) return;
+    e.preventDefault();
+    const id = form.dataset.reviewForm;
+    const rating = Number(form.querySelector('input[name="rating"]:checked')?.value || 0);
+    const title = form.title.value.trim(), body = form.body.value.trim();
+    const name = form.elements.name.value.trim() || 'Amazon Customer';
+    const checks = [['rating', !rating, form.querySelector('#rate1')], ['title', !title, form.title], ['body', !body, form.body]];
+    checks.forEach(([key, bad, field]) => {
+      form.querySelector(`#err-${key}`).hidden = !bad;
+      if (key !== 'rating') field.setAttribute('aria-invalid', bad);
+    });
+    const firstBad = checks.find(c => c[1]);
+    if (firstBad) { firstBad[2].focus(); return; }
+    const old = state.reviews[id];
+    state.reviews[id] = { rating, title, body, name, date: old?.date || new Date().toISOString(), edited: !!old };
+    state.reviewName = name;
+    persist();
+    location.hash = `#/p/${id}/reviews`;
+    toast(old ? '<b>Review updated</b>' : '<b>Review submitted, thank you!</b> It now appears under Customer reviews.');
+  });
+
   document.addEventListener('submit', e => {
     const form = e.target.closest('[data-return-form]');
     if (!form) return;
@@ -821,7 +934,7 @@
   Object.assign(titles, {
     cart: 'Amazon.fr Shopping Basket', checkout: 'Amazon.fr Checkout', order: 'Thank you for your order',
     orders: 'Your Orders', lists: 'Your Wish List', 'best-sellers': 'Best Sellers in Aesop',
-    deals: "Today's Deals", prime: 'Prime delivery', help: 'Customer Service'
+    deals: "Today's Deals", prime: 'Prime delivery', help: 'Customer Service', review: 'Create review'
   });
 
   /* ---------- after every render ---------- */

@@ -44,9 +44,10 @@ Every header, menu and product button works the way it does on Amazon:
 | Search boxes | Live suggestions as you type (arrow keys + Enter) |
 | Product tiles | Add to basket opens the "Added to basket" panel; the eye opens Quick look |
 | Product page | Quantity, Subscribe & refill, gift options, Buy Now, Add to List, customer reviews |
+| Write a product review (`#/review/<id>`) | Star rating, headline, review, public name; required fields show errors. The review appears under Customer reviews with Edit and Delete, and "Verified Purchase" if that product was ordered in this browser |
 | Product photos | Hover a thumbnail to swap the photo; up to 7 thumbnails, then "+N"; click the photo for the full view (arrows, ← → keys, thumbnail grid, Esc) |
 
-Concept demo: there is **no sign-in and no payment form**. Checkout uses "Pay on delivery (demo)". The basket, lists, orders, postcode and language are saved in the visitor's own browser (localStorage), so they survive a refresh but are never sent anywhere.
+Concept demo: there is **no sign-in and no payment form**. Checkout uses "Pay on delivery (demo)". The basket, lists, orders, reviews, postcode and language are saved in the visitor's own browser (localStorage), so they survive a refresh but are never sent anywhere.
 
 ## Deploy
 
