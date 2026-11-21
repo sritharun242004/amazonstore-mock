@@ -97,9 +97,9 @@
       <span class="amz-logo__word">Amazon.fr</span><span class="amz-logo__tag">Concept</span>
     </a>
 
-    <button class="amz-hdr-btn amz-deliver" type="button">
+    <button class="amz-hdr-btn amz-deliver" type="button" data-open="location" aria-haspopup="dialog">
       <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>
-      <span><small>Deliver to</small><b>Paris 75011</b></span>
+      <span><small>Deliver to</small><b data-loc-label>Paris 75011</b></span>
     </button>
 
     <form class="amz-search" id="siteSearch" role="search">
@@ -112,32 +112,32 @@
       </button>
     </form>
 
-    <button class="amz-hdr-btn amz-lang" type="button">
+    <button class="amz-hdr-btn amz-lang" type="button" data-open="lang" aria-haspopup="true" aria-expanded="false">
       <svg viewBox="0 0 3 2" width="20" height="14" aria-hidden="true"><rect width="1" height="2" fill="#0055A4"/><rect x="1" width="1" height="2" fill="#fff"/><rect x="2" width="1" height="2" fill="#EF4135"/></svg>
-      <b>EN</b>
+      <b id="langLabel">EN</b>
     </button>
-    <!-- Display-only: no sign-in, account or checkout exists in this mock-up -->
-    <span class="amz-hdr-btn amz-account is-static"><span><small>Hello, guest</small><b>Account &amp; Lists</b></span></span>
-    <span class="amz-hdr-btn amz-orders is-static"><span><small>Returns</small><b>&amp; Orders</b></span></span>
-    <span class="amz-hdr-btn amz-basket is-static" aria-label="Basket (demo)">
+    <!-- Concept demo: no sign-in. Basket, lists and orders are kept in this browser (js/shop.js). -->
+    <button class="amz-hdr-btn amz-account" type="button" data-open="account" aria-haspopup="true" aria-expanded="false"><span><small>Hello, guest</small><b>Account &amp; Lists</b></span></button>
+    <a class="amz-hdr-btn amz-orders" href="#/orders"><span><small>Returns</small><b>&amp; Orders</b></span></a>
+    <a class="amz-hdr-btn amz-basket" href="#/cart" aria-label="Basket">
       <span class="amz-basket__icon">
         <svg viewBox="0 0 40 30" width="40" height="30" aria-hidden="true"><path d="M2 4h6l5 16h18l4-11H11" fill="none" stroke="#fff" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/><circle cx="15" cy="25.5" r="2.4" fill="#fff"/><circle cx="28" cy="25.5" r="2.4" fill="#fff"/></svg>
         <span class="amz-basket__count" id="basketCount">0</span>
       </span>
       <b>Basket</b>
-    </span>
+    </a>
   </header>
 
   <nav class="amz-subnav" aria-label="Amazon departments">
-    <a href="#/" class="amz-subnav__all"><svg viewBox="0 0 20 16" width="20" height="16" aria-hidden="true"><path d="M1 2h18M1 8h18M1 14h18" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>All</a>
-    <a href="#/">Today's Deals</a>
-    <a href="#/">Prime</a>
+    <button type="button" class="amz-subnav__all" data-open="menu" aria-haspopup="dialog"><svg viewBox="0 0 20 16" width="20" height="16" aria-hidden="true"><path d="M1 2h18M1 8h18M1 14h18" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>All</button>
+    <a href="#/deals">Today's Deals</a>
+    <a href="#/prime">Prime</a>
     <a href="#/">Beauty</a>
     <a href="#/">Luxury Beauty</a>
     <a href="#/gifts">Gift Ideas</a>
-    <a href="#/">Best Sellers</a>
-    <a href="#/">Customer Service</a>
-    <span class="amz-subnav__promo">Christmas gifts, delivered tomorrow with Prime</span>
+    <a href="#/best-sellers">Best Sellers</a>
+    <a href="#/help">Customer Service</a>
+    <a class="amz-subnav__promo" href="#/gifts">Christmas gifts, delivered tomorrow with Prime</a>
   </nav>
 
   <!-- ===== Brand Store ===== -->
@@ -178,15 +178,15 @@
   <footer class="amz-footer">
     <a href="#top" class="amz-footer__top" id="backToTop">Back to top</a>
     <div class="amz-footer__cols">
-      <div><h2>Get to Know Us</h2><ul role="list"><li>About Amazon</li><li>Careers</li><li>Sustainability</li><li>Amazon Science</li></ul></div>
-      <div><h2>Make Money with Us</h2><ul role="list"><li>Sell on Amazon</li><li>Supply to Amazon (Vendor)</li><li>Brand Registry</li><li>Advertise Your Products</li></ul></div>
-      <div><h2>Amazon Payment Methods</h2><ul role="list"><li>Payment Methods Help</li><li>Payment in instalments</li><li>Gift Cards</li></ul></div>
-      <div><h2>Let Us Help You</h2><ul role="list"><li>Track Packages or View Orders</li><li>Delivery Rates &amp; Policies</li><li>Amazon Prime</li><li>Returns &amp; Replacements</li></ul></div>
+      <div><h2>About this concept</h2><ul role="list"><li><a href="#/values">Aesop's values</a></li><li><a href="#/ritual">Find your ritual</a></li><li><a href="#/best-sellers">Best sellers</a></li><li><a href="#/deals">Why there are no deals</a></li></ul></div>
+      <div><h2>Shop the store</h2><ul role="list"><li><a href="#/gifts">Gift Guide</a></li><li><a href="#/hand-body">Hand &amp; Body</a></li><li><a href="#/fragrance">Fragrance</a></li><li><a href="#/for-the-home">For the home</a></li></ul></div>
+      <div><h2>Your account</h2><ul role="list"><li><a href="#/cart">Your Basket</a></li><li><a href="#/lists">Your Lists</a></li><li><a href="#/orders">Your Orders</a></li><li><a href="#/hand-body/refill">Subscribe &amp; refill</a></li></ul></div>
+      <div><h2>Let Us Help You</h2><ul role="list"><li><a href="#/orders">Track Packages or View Orders</a></li><li><a href="#/help">Delivery Rates &amp; Policies</a></li><li><a href="#/prime">Amazon Prime</a></li><li><a href="#/help">Returns &amp; Replacements</a></li><li><a href="#/help">Customer Service</a></li></ul></div>
     </div>
     <div class="amz-footer__mid">
       <span class="amz-logo amz-logo--small" aria-hidden="true"><span class="amz-logo__word">Amazon.fr</span><span class="amz-logo__tag">Concept</span></span>
-      <span class="amz-footer__chip">English</span>
-      <span class="amz-footer__chip">France</span>
+      <button type="button" class="amz-footer__chip" data-open="lang">English</button>
+      <button type="button" class="amz-footer__chip" data-open="location">France</button>
     </div>
     <div class="amz-footer__legal">
       <p class="amz-footer__disclaimer">Student concept – not affiliated with Aesop or Amazon.</p>
@@ -200,5 +200,6 @@
   <script src="js/data.js"></script>
   <script src="js/art.js"></script>
   <script src="js/app.js"></script>
+  <script src="js/shop.js"></script>
 </body>
 </html>

@@ -51,7 +51,7 @@
 
   function stars(p, withCount = true) {
     const pct = (p.rating / 5) * 100;
-    return `<span class="rating"><span class="rating__num">${p.rating.toFixed(1)}</span><span class="stars" role="img" aria-label="${p.rating} out of 5 stars"><span class="stars__fill" style="width:${pct}%"></span></span>${withCount ? `<a class="rating__count" href="#/p/${p.id}">${p.reviews.toLocaleString('en-GB')}</a>` : ''}</span>`;
+    return `<span class="rating"><span class="rating__num">${p.rating.toFixed(1)}</span><span class="stars" role="img" aria-label="${p.rating} out of 5 stars"><span class="stars__fill" style="width:${pct}%"></span></span>${withCount ? `<a class="rating__count" href="#/p/${p.id}/reviews">${p.reviews.toLocaleString('en-GB')}</a>` : ''}</span>`;
   }
 
   const primeBadge = `<span class="prime" aria-label="Prime"><svg viewBox="0 0 16 12" width="14" height="11" aria-hidden="true"><path d="M1.5 6.5 6 10.5 14.5 1.5" fill="none" stroke="#F59E0B" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>prime</span>`;
@@ -74,7 +74,7 @@
         ${productSVG(p, { decorative: true })}
         ${p.subscribe ? '<span class="tile__flag">Subscribe &amp; refill</span>' : ''}
       </a>
-      <a class="tile__look" href="#/p/${p.id}" aria-label="Quick look: ${esc(p.name)}">
+      <a class="tile__look" href="#/p/${p.id}" data-quick="${p.id}" aria-label="Quick look: ${esc(p.name)}">
         <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M1.5 12S5.5 5 12 5s10.5 7 10.5 7-4 7-10.5 7S1.5 12 1.5 12z" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3.4" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
       </a>
       <div class="tile__body">
@@ -304,8 +304,8 @@
           <h2>Never run out of hand wash</h2>
           <p>Subscribe to Reverence Aromatique Hand Wash and a 500 mL refill arrives every two months. Skip or cancel any time.</p>
           <div class="sns">
-            <label class="sns__opt"><input type="radio" name="sns-band" checked> <span><b>Subscribe &amp; refill</b> every 2 months<small>Same price, delivered before you run out.</small></span> ${price(wash, 'price--sm')}</label>
-            <label class="sns__opt"><input type="radio" name="sns-band"> <span><b>One-time purchase</b></span> ${price(wash, 'price--sm')}</label>
+            <label class="sns__opt"><input type="radio" name="sns-band" value="sub" checked> <span><b>Subscribe &amp; refill</b> every 2 months<small>Same price, delivered before you run out.</small></span> ${price(wash, 'price--sm')}</label>
+            <label class="sns__opt"><input type="radio" name="sns-band" value="once"> <span><b>One-time purchase</b></span> ${price(wash, 'price--sm')}</label>
           </div>
           ${addBtn(wash, 'Set up subscription')}
         </div>
@@ -565,18 +565,19 @@
           <div class="buybox__price">${price(p, 'price--lg')}</div>
           <p class="delivery">${primeBadge}</p>
           <p class="buybox__line">FREE delivery <b>${tomorrow}</b>. Order within <span class="buybox__green">6 hrs 12 mins</span>.</p>
-          <p class="buybox__loc"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg> Deliver to Paris 75011</p>
+          <button type="button" class="buybox__loc" data-open="location"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg> Deliver to <span data-loc-label>Paris 75011</span></button>
           <p class="buybox__stock">In stock</p>
-          <label class="buybox__qty">Quantity <select><option>1</option><option>2</option><option>3</option></select></label>
+          <label class="buybox__qty">Quantity <select data-qty>${[1,2,3,4,5,6,7,8,9,10].map(n => `<option>${n}</option>`).join('')}</select></label>
           ${addBtn(p, 'Add to basket', 'add-btn--wide')}
-          <button type="button" class="buy-now" data-add="${p.id}">Buy Now</button>
+          <button type="button" class="buy-now" data-buy="${p.id}">Buy Now</button>
           <dl class="buybox__seller">
             <div><dt>Ships from</dt><dd>Amazon</dd></div>
             <div><dt>Sold by</dt><dd>Amazon</dd></div>
             <div><dt>Returns</dt><dd>Returnable within 30 days</dd></div>
             <div><dt>Packaging</dt><dd>Ships in plain outer box</dd></div>
           </dl>
-          <label class="buybox__gift"><input type="checkbox"> Add gift options</label>
+          <label class="buybox__gift"><input type="checkbox" data-gift> Add gift options</label>
+          <button type="button" class="pill-btn pill-btn--wide buybox__list" data-list="${p.id}">Add to List</button>
         </aside>
       </section>
 
@@ -591,8 +592,36 @@
         </div>
       </section>
 
+      ${reviewsBlock(p)}
+
       ${carousel(related, 'Customers who viewed this item also viewed')}`;
   };
+
+  // Rating breakdown derived from the placeholder average, so bars and stars always agree
+  function reviewsBlock(p) {
+    const p5 = Math.max(40, Math.min(85, Math.round(55 + (p.rating - 4.5) * 60)));
+    const p4 = Math.round((100 - p5) * 0.6);
+    const p3 = Math.round((100 - p5 - p4) * 0.55);
+    const p2 = Math.round((100 - p5 - p4 - p3) * 0.5);
+    const bars = [[5, p5], [4, p4], [3, p3], [2, p2], [1, 100 - p5 - p4 - p3 - p2]];
+    return `<section class="reviews" id="reviews">
+      <h2 class="block__title">Customer reviews</h2>
+      <div class="reviews__grid">
+        <div class="reviews__summary">
+          ${stars(p, false)}
+          <p class="reviews__avg">${p.rating.toFixed(1)} out of 5</p>
+          <p class="reviews__total">${p.reviews.toLocaleString('en-GB')} global ratings</p>
+          <table class="reviews__bars"><tbody>${bars.map(([n, pct]) => `<tr><th scope="row">${n} star</th><td><span class="reviews__bar"><span style="width:${pct}%"></span></span></td><td>${pct}%</td></tr>`).join('')}</tbody></table>
+        </div>
+        <div class="reviews__note">
+          <h3>Review this product</h3>
+          <p>Share your thoughts with other customers.</p>
+          <button type="button" class="pill-btn pill-btn--wide" data-write-review="${p.id}">Write a product review</button>
+          <p class="reviews__fine">Ratings shown are placeholders for this concept. Written reviews appear once the official store launches.</p>
+        </div>
+      </div>
+    </section>`;
+  }
 
   pages['search'] = q => {
     const term = decodeURIComponent(q || '').trim();
@@ -609,8 +638,8 @@
 
   function parse() {
     const h = location.hash.replace(/^#\/?/, '');
-    const [route, arg] = h.split('/');
-    return { route: route || '', arg };
+    const [route, arg, extra] = h.split('/');
+    return { route: route || '', arg, extra };
   }
 
   const caret = '<svg class="store-nav__caret" viewBox="0 0 10 6" width="10" height="6" aria-hidden="true"><path d="M0 0h10L5 6z" fill="currentColor"/></svg>';
@@ -628,26 +657,29 @@
   }
 
   function render() {
-    const { route, arg } = parse();
+    const { route, arg, extra } = parse();
     if (route === 'top') return; // footer "Back to top" link
     const view = pages[route] || pages[''];
-    page.innerHTML = view(arg);
+    page.innerHTML = view(arg, extra);
     renderTabs(pages[route] ? route : '');
     const tabLabel = (tabs.find(t => t.route === route) || {}).label;
     document.title = route === 'p' && byId(arg) ? `Aesop ${byId(arg).name} | Amazon.fr concept` :
+      titles[route] ? `${titles[route]} | Amazon.fr concept` :
       `${tabLabel && route ? tabLabel + ' | ' : ''}Aesop Store Concept on Amazon.fr`;
     // A dropdown link like #/hand-body/light opens the page with that filter chip applied
     const chip = arg && route !== 'p' && route !== 'search' && page.querySelector(`[data-filter="${CSS.escape(decodeURIComponent(arg))}"]`);
     if (chip) chip.click();
     window.scrollTo({ top: 0 });
     page.focus({ preventScroll: true });
+    // A third segment names a section to jump to, e.g. #/p/<id>/reviews
+    if (extra && document.getElementById(extra)) document.getElementById(extra).scrollIntoView();
+    hooks.forEach(fn => fn(route, arg));
     // Videos inserted via innerHTML do not always honour autoplay, so start it explicitly
     if (!reduceMotion.matches) page.querySelectorAll('video').forEach(v => v.play().catch(() => {}));
   }
 
   /* ---------- interactions ---------- */
 
-  let basket = 0;
   let toastTimer;
   function toast(msg) {
     const t = $('#toast');
@@ -674,17 +706,6 @@
   }
 
   document.addEventListener('click', e => {
-    const add = e.target.closest('[data-add]');
-    if (add) {
-      const p = byId(add.dataset.add);
-      basket += 1;
-      const c = $('#basketCount');
-      c.textContent = basket;
-      c.classList.remove('bump'); void c.offsetWidth; c.classList.add('bump');
-      toast(`<b>Added to basket</b> ${esc(p.name)}<small>Demo only. Nothing is ordered.</small>`);
-      return;
-    }
-
     const chip = e.target.closest('[data-filter]');
     if (chip) {
       const group = chip.parentElement;
@@ -792,8 +813,15 @@
     if (v && !reduceMotion.matches) v.play().catch(() => {});
   };
 
+  // shop.js (basket, checkout, orders, menus) registers its pages, titles and hooks here
+  const titles = {};
+  const hooks = [];
+  window.STORE = { pages, titles, hooks, products, byId, esc, productSVG, price, stars, primeBadge, soldBy, parity,
+    delivery, tile, grid, carousel, toast, render, tomorrow, tomorrowShort, $ };
+
   window.addEventListener('hashchange', render);
   loadAssets();
   drawHero();
-  render();
+  // Scripts sit at the end of <body>, so DOMContentLoaded fires after shop.js has registered its pages
+  document.addEventListener('DOMContentLoaded', render);
 })();

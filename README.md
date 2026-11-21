@@ -27,6 +27,26 @@ python3 -m http.server 4173
 
 To show the pitch notes while presenting, open the site with `?notes` added to the link, e.g. `https://aesop-amazon-concept.vercel.app/?notes`. Each page then shows which persona and problem it answers.
 
+## Shopping features (`js/shop.js`)
+
+Every header, menu and product button works the way it does on Amazon:
+
+| Where | What it does |
+|---|---|
+| Deliver to | Choose a French postcode; updates the header, product pages and checkout |
+| EN | Language and currency menu |
+| Account & Lists | Menu with Wish List, Orders, Basket, Subscribe & refill, Customer Service |
+| Returns & Orders (`#/orders`) | Your orders: track package, return items, cancel, buy again |
+| Basket (`#/cart`) | Quantity stepper, delete, save for later, gift option, subtotal, checkout |
+| Checkout (`#/checkout`) | Address, delivery date choice, order summary, Place your order |
+| ☰ All | Slide-in menu with every store page and help links |
+| Today's Deals, Prime, Best Sellers, Customer Service | Their own pages (`#/deals`, `#/prime`, `#/best-sellers`, `#/help`) |
+| Search boxes | Live suggestions as you type (arrow keys + Enter) |
+| Product tiles | Add to basket opens the "Added to basket" panel; the eye opens Quick look |
+| Product page | Quantity, Subscribe & refill, gift options, Buy Now, Add to List, customer reviews |
+
+Concept demo: there is **no sign-in and no payment form**. Checkout uses "Pay on delivery (demo)". The basket, lists, orders, postcode and language are saved in the visitor's own browser (localStorage), so they survive a refresh but are never sent anywhere.
+
 ## Deploy
 
 - **Netlify (fastest):** go to https://app.netlify.com/drop and drag this folder in.
