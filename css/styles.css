@@ -398,7 +398,9 @@ a.add-btn, a.pill-btn { text-align: center; text-decoration: none; color: var(--
 .tile__price { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: center; }
 .tile .add-btn { margin-top: auto; padding: 8px 40px; }
 .tile .soldby, .tile .delivery { justify-content: center; }
-.tile__body > :last-child { margin-top: 10px; }
+/* The button sits on the card's bottom edge so every button in a row lines up */
+.tile__body > :last-child { margin-top: auto; }
+.tile__body > :nth-last-child(2) { margin-bottom: 5px; }
 
 /* ---------- carousel ---------- */
 .carousel { position: relative; }
