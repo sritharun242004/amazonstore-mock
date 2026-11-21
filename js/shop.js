@@ -26,14 +26,23 @@
     lang: load('lang', 'EN'),
     follow: load('follow', false),
     reviews: load('reviews', {}),                          // { [id]: { rating, title, body, name, date } }
-    reviewName: load('reviewName', 'Amazon Customer')
+    reviewName: load('reviewName', 'Amazon Customer'),
+    addresses: load('addresses', []),                       // [{ id, name, line1, line2, zip, city, phone }]
+    defaultAddr: load('defaultAddr', null),
+    subs: load('subs', []).filter(s => byId(s.pid)),        // Subscribe & refill: [{ id, pid, qty, every, next, status }]
+    history: load('history', []).filter(byId),              // recently viewed product ids, newest first
+    historyOn: load('historyOn', true)
   };
-  const persist = () => ['cart', 'saved', 'list', 'orders', 'zip', 'lang', 'follow', 'reviews', 'reviewName'].forEach(k => save(k, state[k]));
+  const persist = () => ['cart', 'saved', 'list', 'orders', 'zip', 'lang', 'follow', 'reviews', 'reviewName',
+    'addresses', 'defaultAddr', 'subs', 'history', 'historyOn'].forEach(k => save(k, state[k]));
 
   const eur = n => '€' + n.toFixed(2);
   const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`;
   const count = () => state.cart.reduce((n, i) => n + i.qty, 0);
   const subtotal = (lines = state.cart) => lines.reduce((s, i) => s + byId(i.id).price * i.qty, 0);
+  // Like Amazon, unticked basket items stay in the basket but are left out of the subtotal and checkout
+  const chosen = () => state.cart.filter(l => l.sel !== false);
+  const countOf = lines => lines.reduce((n, i) => n + i.qty, 0);
 
   const CITIES = { '75': 'Paris', '69': 'Lyon', '13': 'Marseille', '33': 'Bordeaux', '31': 'Toulouse', '59': 'Lille',
     '06': 'Nice', '44': 'Nantes', '67': 'Strasbourg', '34': 'Montpellier', '35': 'Rennes', '92': 'Hauts-de-Seine', '94': 'Val-de-Marne' };
@@ -53,6 +62,30 @@
     const c = $('#basketCount');
     c.textContent = count();
     if (bump) { c.classList.remove('bump'); void c.offsetWidth; c.classList.add('bump'); }
+    updateTileButtons();
+  }
+
+  // Product cards: once an item is in the basket its button turns into a quantity stepper, as in Amazon results
+  const tileQty = id => state.cart.find(l => l.id === id && !l.sub)?.qty || 0;
+  function updateTileButtons() {
+    document.querySelectorAll('.tile').forEach(tile => {
+      const slot = tile.querySelector('.tile__body > [data-add], .tile__body > .tile-step');
+      if (!slot) return;
+      const id = slot.dataset.add || slot.dataset.step;
+      const qty = tileQty(id);
+      const p = byId(id);
+      const html = qty
+        ? `<div class="tile-step" data-step="${id}" role="group" aria-label="${esc(p.name)} in basket">
+             <button type="button" data-step-dec="${id}" aria-label="${qty === 1 ? 'Remove from basket' : 'Decrease quantity'}">${qty === 1 ? trashIcon : '−'}</button>
+             <span aria-live="polite">${qty}</span>
+             <button type="button" data-step-inc="${id}" aria-label="Increase quantity" ${qty >= 10 ? 'disabled' : ''}>+</button>
+           </div>`
+        : `<button type="button" class="add-btn " data-add="${id}">Add to basket</button>`;
+      const had = document.activeElement && slot.contains(document.activeElement) ? document.activeElement.matches('[data-step-dec]') ? 'dec' : 'inc' : '';
+      if (slot.outerHTML.replace(/\s+/g, ' ') === html.replace(/\s+/g, ' ')) return;
+      slot.outerHTML = html;
+      if (had) (tile.querySelector(had === 'dec' ? '[data-step-dec]' : '[data-step-inc]') || tile.querySelector('[data-add]'))?.focus();
+    });
   }
   function updateLocation() { document.querySelectorAll('[data-loc-label]').forEach(el => { el.textContent = where(); }); }
   function updateLang() { $('#langLabel').textContent = state.lang; }
@@ -86,8 +119,8 @@
   // Re-draw the current page in place (no scroll jump) after a basket or order change
   const live = ['cart', 'checkout', 'orders', 'lists', 'order'];
   function refresh() {
-    const [route, arg] = location.hash.replace(/^#\/?/, '').split('/');
-    if (live.includes(route)) { $('#page').innerHTML = pages[route](arg); afterRender(route); }
+    const [route, arg, extra] = location.hash.replace(/^#\/?/, '').split('/');
+    if (live.includes(route)) { $('#page').innerHTML = pages[route](arg, extra); hooks.forEach(fn => fn(route, arg)); }
   }
 
   /* ---------- overlay: modals, side menu, "added to basket" sheet ---------- */
@@ -139,8 +172,10 @@
     openPanel(`${head('Choose your location')}
       <div class="panel__body">
         <p class="muted">Delivery options and delivery speeds may vary for different locations.</p>
+        ${state.addresses.length ? `<div class="loc-addrs">${state.addresses.map(a => `<button type="button" class="loc-addr${a.id === shipTo().id ? ' is-on' : ''}" data-use-addr="${a.id}"><b>${esc(a.name)}</b> ${esc(a.line1)}, ${esc(a.zip)} ${esc(a.city)}${a.id === state.defaultAddr ? '<small>Default address</small>' : ''}</button>`).join('')}</div>` : ''}
+        <a class="loc-manage" href="#/addresses">${state.addresses.length ? 'Manage address book' : 'Add an address or pick-up point'}</a>
         <form class="loc-form" data-loc-form novalidate>
-          <label for="locZip">Enter a French postcode</label>
+          <label for="locZip">${state.addresses.length ? 'or enter a French postcode' : 'Enter a French postcode'}</label>
           <div class="loc-row">
             <input id="locZip" name="zip" inputmode="numeric" maxlength="5" value="${esc(state.zip)}" autocomplete="postal-code" autofocus>
             <button class="pill-btn" type="submit">Apply</button>
@@ -161,13 +196,16 @@
           <h3>Trending</h3>
           ${link('#/best-sellers', 'Best Sellers')}${link('#/deals', "Today's Deals")}${link('#/prime', 'Prime')}
           <h3>Help &amp; settings</h3>
-          ${link('#/orders', 'Your Orders')}${link('#/lists', 'Your Lists')}${link('#/cart', 'Your Basket')}${link('#/help', 'Customer Service')}
+          ${link('#/account', 'Your Account')}${link('#/orders', 'Your Orders')}${link('#/subscriptions', 'Your Subscribe &amp; refill')}${link('#/lists', 'Your Lists')}${link('#/history', 'Your browsing history')}${link('#/cart', 'Your Basket')}${link('#/help', 'Customer Service')}
           <button type="button" class="drawer__btn" data-open="location">Deliver to ${esc(where())}</button>
           <button type="button" class="drawer__btn" data-open="lang-menu">Language: ${state.lang === 'FR' ? 'Français' : 'English'}</button>
         </nav>
       </div>
       <button type="button" class="drawer__x" data-close aria-label="Close menu">×</button>`, { kind: 'drawer', label: 'All departments' });
   }
+
+  // After a card's button becomes a stepper, keep keyboard focus on it
+  function tileFocus(id) { document.querySelector(`.tile-step[data-step="${id}"] [data-step-inc]`)?.focus(); }
 
   function openAdded(p) {
     const n = count();
@@ -244,8 +282,8 @@
     account: () => `<div class="fly-acct">
         <p class="fly-acct__note"><b>Concept demo</b> There is no sign-in. Your basket, lists and orders are saved in this browser.</p>
         <div class="fly-acct__cols">
-          <div><h3>Your Lists</h3><a href="#/lists">Wish List (${state.list.length})</a><a href="#/best-sellers">Discover best sellers</a><a href="#/ritual">Find your ritual</a></div>
-          <div><h3>Your Account</h3><a href="#/orders">Your Orders (${state.orders.length})</a><a href="#/cart">Your Basket (${count()})</a><a href="#/hand-body/refill">Subscribe &amp; refill</a><a href="#/help">Customer Service</a></div>
+          <div><h3>Your Lists</h3><a href="#/lists">Wish List (${state.list.length})</a><a href="#/history">Browsing history</a><a href="#/best-sellers">Discover best sellers</a><a href="#/ritual">Find your ritual</a></div>
+          <div><h3>Your Account</h3><a href="#/account">Your Account</a><a href="#/orders">Your Orders (${state.orders.length})</a><a href="#/subscriptions">Your Subscribe &amp; refill</a><a href="#/addresses">Your Addresses</a><a href="#/my-reviews">Your reviews</a><a href="#/help">Customer Service</a></div>
         </div>
       </div>`,
     lang: () => `<form class="fly-lang" data-lang-form>
@@ -405,9 +443,21 @@
       const subSelector = add.closest('.subscribe-band') ? 'input[name="sns-band"]:checked'
         : add.closest('.buybox') ? 'input[name="sns-pdp"]:checked' : '';
       const sub = subSelector ? document.querySelector(subSelector)?.value === 'sub' : false;
+      // Check before adding: adding swaps a card's button for the stepper
+      const inCard = !!add.closest('.tile') && !add.closest('.lists');
       addToCart(p.id, qty, { gift, sub });
+      if (inCard) { tileFocus(p.id); return; }
       closePanel(false);
       openAdded(p);
+      return;
+    }
+    const stepInc = t.closest('[data-step-inc]');
+    if (stepInc) { addToCart(stepInc.dataset.stepInc, 1); return; }
+    const stepDec = t.closest('[data-step-dec]');
+    if (stepDec) {
+      const i = state.cart.findIndex(l => l.id === stepDec.dataset.stepDec && !l.sub);
+      if (i > -1) { if (state.cart[i].qty > 1) state.cart[i].qty -= 1; else state.cart.splice(i, 1); }
+      persist(); updateCount(); refresh();
       return;
     }
 
@@ -469,7 +519,19 @@
       navigator.clipboard?.writeText(url).then(() => toast('<b>Link copied</b> Paste it anywhere to share this product.'), () => toast(url));
       return;
     }
-    if (t.closest('[data-checkout]')) { location.hash = '#/checkout'; return; }
+    if (t.closest('[data-checkout]')) { if (chosen().length) location.hash = '#/checkout'; return; }
+    const selAll = t.closest('[data-sel-all]');
+    if (selAll) { const on = selAll.dataset.selAll === 'on'; state.cart.forEach(l => { l.sel = on; }); persist(); refresh(); return; }
+    const promo = t.closest('[data-promo]');
+    if (promo) {
+      const input = document.getElementById('promoCode'), msg = document.getElementById('promoMsg');
+      const code = input.value.trim();
+      msg.hidden = false;
+      msg.textContent = code ? `The promotional code "${code}" is not valid. Aesop formulations are sold at the aesop.fr price, without promotional codes.` : 'Enter a gift card or promotional code.';
+      input.setAttribute('aria-invalid', 'true');
+      input.focus();
+      return;
+    }
 
     // Checkout
     if (t.closest('[data-place-order]')) { placeOrder(); return; }
@@ -489,6 +551,7 @@
         persist(); closePanel(false); refresh();
         toast('<b>Order cancelled</b> No charge was made.');
       }
+        if (S.onConfirm?.(action, id)) return;
       if (action === 'review') {
         delete state.reviews[id];
         persist(); closePanel(false); S.render();
@@ -511,6 +574,7 @@
   document.addEventListener('change', e => {
     const t = e.target;
     if (t.matches('[data-gift-line]')) { state.cart[Number(t.dataset.giftLine)].gift = t.checked; persist(); return; }
+    if (t.matches('[data-sel-line]')) { state.cart[Number(t.dataset.selLine)].sel = t.checked; persist(); refresh(); document.querySelector(`[data-sel-line="${t.dataset.selLine}"]`)?.focus(); return; }
     if (t.matches('[data-gift-all]')) { state.cart.forEach(l => { l.gift = t.checked; }); persist(); refresh(); return; }
     if (t.closest('[data-lang-form]') && t.name === 'lang') {
       state.lang = t.value;
@@ -519,6 +583,19 @@
       toast(t.value === 'FR' ? '<b>Langue : Français</b> The concept itself stays in English for the pitch.' : '<b>Language: English</b>');
     }
   });
+
+  // Your Orders: filter the cards by product name or order number
+  const filterOrders = form => {
+    const q = form.q.value.trim().toLowerCase();
+    let shown = 0;
+    document.querySelectorAll('.orders .order-card').forEach(card => {
+      const hit = !q || card.textContent.toLowerCase().includes(q);
+      card.hidden = !hit; shown += hit;
+    });
+    document.querySelector('.orders__none').hidden = shown > 0;
+  };
+  document.addEventListener('input', e => { const f = e.target.closest('[data-order-search]'); if (f) filterOrders(f); });
+  document.addEventListener('submit', e => { const f = e.target.closest('[data-order-search]'); if (f) { e.preventDefault(); filterOrders(f); } });
 
   document.addEventListener('submit', e => {
     const form = e.target.closest('[data-loc-form]');
@@ -541,22 +618,39 @@
     return `40${d(1)}-${d(7)}-${d(7)}`;
   };
 
+  // The default delivery address, or the demo one until the visitor adds their own
+  function shipTo() {
+    const a = state.addresses.find(x => x.id === state.defaultAddr) || state.addresses[0];
+    return a || { name: 'Demo customer', line1: '12 Rue de la Roquette', line2: '', zip: state.zip, city: city(state.zip), phone: '' };
+  }
+  const addrLines = a => [a.line1, a.line2, `${a.zip} ${a.city}`, 'France'].filter(Boolean);
+
   function placeOrder() {
-    if (!state.cart.length) return;
+    const lines = chosen();
+    if (!lines.length) return;
     const later = document.querySelector('input[name="deliv"]:checked')?.value === 'later';
+    const a = shipTo();
     const order = {
       id: orderId(),
       placed: new Date().toISOString(),
       arrive: dayAfter(later ? 3 : 1).toISOString(),
-      items: state.cart.map(l => ({ ...l, price: byId(l.id).price })),
-      total: subtotal(),
-      address: `12 Rue de la Roquette, ${where()}`
+      items: lines.map(({ sel, ...l }) => ({ ...l, price: byId(l.id).price })),
+      total: subtotal(lines),
+      name: a.name,
+      address: addrLines(a).join(', '),
+      giftMessage: document.getElementById('giftMsg')?.value.trim() || '',
+      speed: later ? 'Amazon Day Delivery' : 'Prime Delivery'
     };
     state.orders.unshift(order);
-    state.cart = [];
+    // Subscribe & refill lines start a subscription, managed from Your Subscribe & refill
+    lines.filter(l => l.sub).forEach(l => {
+      const next = new Date(order.arrive); next.setMonth(next.getMonth() + 2);
+      state.subs.unshift({ id: 'S' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5), pid: l.id, qty: l.qty, every: 2, next: next.toISOString(), status: 'active', started: order.placed });
+    });
+    state.cart = state.cart.filter(l => l.sel === false);
     persist();
     updateCount();
-    location.hash = `#/order/${order.id}`;
+    location.hash = `#/order/${order.id}/placed`;
   }
 
   function openTracking(o) {
@@ -708,7 +802,8 @@
 
   const cartLine = (l, i) => {
     const p = byId(l.id);
-    return `<div class="cart-item">
+    return `<div class="cart-item${l.sel === false ? ' cart-item--off' : ''}">
+      <label class="cart-item__sel"><input type="checkbox" data-sel-line="${i}" ${l.sel === false ? '' : 'checked'}><span class="visually-hidden">Include ${esc(p.name)} in checkout</span></label>
       <a class="cart-item__img" href="#/p/${p.id}">${productSVG(p, { decorative: true })}</a>
       <div class="cart-item__body">
         <h2 class="cart-item__name"><a href="#/p/${p.id}">Aesop ${esc(p.name)}, ${esc(p.size)}</a></h2>
@@ -733,13 +828,17 @@
   };
 
   pages.cart = () => {
-    const n = count();
+    const sel = chosen(), n = countOf(sel);
     const anyGift = state.cart.some(l => l.gift);
+    const subText = sel.length ? `Subtotal (${plural(n, 'item')}): <b>${eur(subtotal(sel))}</b>` : 'No items selected';
     const main = state.cart.length
       ? `<h1 class="cart__title">Shopping Basket</h1>
+         <p class="cart__selall">${sel.length === state.cart.length
+           ? '<button type="button" class="linklike" data-sel-all="off">Deselect all items</button>'
+           : '<button type="button" class="linklike" data-sel-all="on">Select all items</button>'}</p>
          <p class="cart__pricehead">Price</p>
          ${state.cart.map(cartLine).join('')}
-         <p class="cart__subtotal">Subtotal (${plural(n, 'item')}): <b>${eur(subtotal())}</b></p>`
+         <p class="cart__subtotal">${subText}</p>`
       : `<div class="cart-empty">
            <h1>Your Amazon Basket is empty</h1>
            <p>Nothing here yet. Start with the formulations our customers come back to most.</p>
@@ -748,9 +847,10 @@
     const box = state.cart.length
       ? `<aside class="cart-box">
            <p class="cart-box__free">${primeBadge} Your order qualifies for FREE delivery tomorrow.</p>
-           <p class="cart-box__sub">Subtotal (${plural(n, 'item')}): <b>${eur(subtotal())}</b></p>
+           <p class="cart-box__sub">${subText}</p>
            <label class="cart-box__gift"><input type="checkbox" data-gift-all ${anyGift ? 'checked' : ''}> This order contains a gift</label>
-           <button type="button" class="add-btn add-btn--wide" data-checkout>Proceed to checkout</button>
+           <button type="button" class="add-btn add-btn--wide" data-checkout ${sel.length ? '' : 'disabled'}>Proceed to checkout</button>
+           ${sel.length ? '' : '<p class="muted small">Tick the items you want to buy now.</p>'}
          </aside>`
       : '';
     const saved = state.saved.length
@@ -772,10 +872,13 @@
   };
 
   pages.checkout = () => {
-    if (!state.cart.length) {
-      return `<section class="cart-empty cart-empty--page"><h1>Your basket is empty</h1><p>Add something to your basket to check out.</p><a class="add-btn" href="#/">Continue shopping</a></section>`;
+    const lines = chosen();
+    if (!lines.length) {
+      return `<section class="cart-empty cart-empty--page"><h1>${state.cart.length ? 'No items selected' : 'Your basket is empty'}</h1><p>${state.cart.length ? 'Tick the items you want to buy in your basket.' : 'Add something to your basket to check out.'}</p><a class="add-btn" href="${state.cart.length ? '#/cart' : '#/'}">${state.cart.length ? 'Go to basket' : 'Continue shopping'}</a></section>`;
     }
-    const n = count();
+    const n = countOf(lines);
+    const a = shipTo();
+    const anyGift = lines.some(l => l.gift);
     const t1 = longDate(dayAfter(1));
     const t3 = longDate(dayAfter(3));
     return `<section class="checkout">
@@ -784,20 +887,25 @@
         <section class="co-step">
           <h2><span>1</span>Delivery address</h2>
           <div class="co-step__body">
-            <p><b>Demo customer</b><br>12 Rue de la Roquette<br><span data-loc-label>${esc(where())}</span>, France</p>
-            <button type="button" class="linklike" data-open="location">Change</button>
+            <p><b>${esc(a.name)}</b><br>${addrLines(a).map(esc).join('<br>')}${a.phone ? `<br><span class="muted">Phone: ${esc(a.phone)}</span>` : ''}</p>
+            <button type="button" class="linklike" data-open="addresses">Change</button>
           </div>
         </section>
         <section class="co-step">
           <h2><span>2</span>Payment method</h2>
           <div class="co-step__body co-step__body--col">
             <label class="co-radio"><input type="radio" name="pay" checked> <span><b>Pay on delivery (demo)</b><small>Concept demo: no payment details are collected and nothing is charged.</small></span></label>
+            <div class="co-promo">
+              <label for="promoCode">Add a gift card or promotion code or voucher</label>
+              <div class="loc-row"><input id="promoCode" placeholder="Enter code" autocomplete="off" aria-describedby="promoMsg"><button type="button" class="pill-btn" data-promo>Apply</button></div>
+              <p class="loc-error" id="promoMsg" role="alert" hidden></p>
+            </div>
           </div>
         </section>
         <section class="co-step">
           <h2><span>3</span>Review items and delivery</h2>
           <div class="co-step__body co-step__body--col">
-            <div class="co-items">${state.cart.map(l => { const p = byId(l.id); return `<div class="co-item">
+            <div class="co-items">${lines.map(l => { const p = byId(l.id); return `<div class="co-item">
               <span class="co-item__img">${productSVG(p, { decorative: true })}</span>
               <div><p class="co-item__name">Aesop ${esc(p.name)}, ${esc(p.size)}</p>
               <p>${price(p, 'price--sm')} <span class="muted">· Qty ${l.qty}</span></p>
@@ -809,6 +917,11 @@
               <label class="co-radio"><input type="radio" name="deliv" value="tomorrow" checked> <span><b class="co-green">${t1}</b><small>FREE Prime Delivery</small></span></label>
               <label class="co-radio"><input type="radio" name="deliv" value="later"> <span><b>${t3}</b><small>FREE Amazon Day Delivery: fewer boxes, fewer trips</small></span></label>
             </fieldset>
+            ${anyGift ? `<div class="co-gift">
+              <label for="giftMsg">Gift message <span class="muted">(optional)</span></label>
+              <textarea id="giftMsg" rows="3" maxlength="240" placeholder="Happy holidays! Enjoy your new ritual."></textarea>
+              <p class="muted small">Printed on a card in the parcel. Prices are hidden on the packing slip.</p>
+            </div>` : ''}
           </div>
         </section>
       </div>
@@ -817,35 +930,56 @@
         <p class="co-summary__fine">Concept demo: your order is saved in this browser only. Nothing is shipped or charged.</p>
         <h2>Order Summary</h2>
         <dl>
-          <div><dt>Items:</dt><dd>${eur(subtotal())}</dd></div>
+          <div><dt>Items:</dt><dd>${eur(subtotal(lines))}</dd></div>
           <div><dt>Delivery:</dt><dd>${eur(0)}</dd></div>
-          <div class="co-total"><dt>Order Total:</dt><dd>${eur(subtotal())}</dd></div>
+          <div class="co-total"><dt>Order Total:</dt><dd>${eur(subtotal(lines))}</dd></div>
         </dl>
       </aside>
     </section>`;
   };
 
-  pages.order = id => {
+  pages.order = (id, extra) => {
     const o = state.orders.find(x => x.id === id);
     if (!o) return `<section class="cart-empty cart-empty--page"><h1>Order not found</h1><p><a href="#/orders">See your orders</a></p></section>`;
+    if (extra !== 'placed') return orderDetails(o);
     return `<section class="thanks">
       <div class="thanks__box">
         <p class="thanks__ok">${checkIcon} Order placed, thank you!</p>
         <p>Your order <b>${esc(o.id)}</b> will arrive <b class="co-green">${longDate(new Date(o.arrive))}</b>.</p>
-        <p class="muted">Shipping to Demo customer, ${esc(o.address)}.</p>
+        <p class="muted">Shipping to ${esc(o.name || 'Demo customer')}, ${esc(o.address)}.</p>
         <div class="thanks__items">${o.items.map(l => `<a href="#/p/${l.id}" class="thanks__thumb" aria-label="${esc(byId(l.id).name)}">${productSVG(byId(l.id), { decorative: true })}</a>`).join('')}</div>
-        <a class="linklike" href="#/orders">Review or edit your recent orders</a>
+        <p class="thanks__links"><a href="#/order/${o.id}">View order details</a> · <a href="#/orders">Review or edit your recent orders</a>${o.items.some(l => l.sub) ? ' · <a href="#/subscriptions">Manage your Subscribe &amp; refill</a>' : ''}</p>
       </div>
     </section>
     ${S.carousel(products.filter(p => p.gift).slice(0, 10), 'Gifts customers add to their next order')}`;
   };
 
+  function orderDetails(o) {
+    const items = o.items.reduce((n, l) => n + l.qty, 0);
+    return `<section class="orders">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="#/account">Your Account</a> › <a href="#/orders">Your Orders</a> › Order Details</nav>
+      <h1 class="orders__title">Order Details</h1>
+      <p class="od-meta">Ordered on ${shortDate(new Date(o.placed))} <span aria-hidden="true">|</span> Order# ${esc(o.id)} <span aria-hidden="true">|</span> <a href="#/invoice/${o.id}">View or print invoice</a></p>
+      <div class="od-box">
+        <div><h2>Delivery address</h2><p>${esc(o.name || 'Demo customer')}<br>${esc(o.address).split(', ').join('<br>')}</p></div>
+        <div><h2>Payment method</h2><p>Pay on delivery (demo)</p></div>
+        <div><h2>Order Summary</h2><dl class="od-sum">
+          <div><dt>Item(s) subtotal:</dt><dd>${eur(o.total)}</dd></div>
+          <div><dt>Postage &amp; packing:</dt><dd>${eur(0)}</dd></div>
+          <div class="co-total"><dt>Grand Total:</dt><dd>${eur(o.total)}</dd></div></dl></div>
+      </div>
+      ${orderCard(o)}
+      ${o.giftMessage ? `<p class="od-gift"><b>Gift message:</b> ${esc(o.giftMessage)}</p>` : ''}
+      <p class="muted small">${plural(items, 'item')} · ${esc(o.speed || 'Prime Delivery')}</p>
+    </section>`;
+  }
+
   const orderCard = o => `<article class="order-card">
     <header class="order-card__head">
       <div><small>Order placed</small>${shortDate(new Date(o.placed))}</div>
       <div><small>Total</small>${eur(o.total)}</div>
-      <div><small>Dispatch to</small>Demo customer</div>
-      <div class="order-card__id"><small>Order # ${esc(o.id)}</small><a href="#/order/${o.id}">View order details</a></div>
+      <div><small>Dispatch to</small>${esc(o.name || 'Demo customer')}</div>
+      <div class="order-card__id"><small>Order # ${esc(o.id)}</small><span><a href="#/order/${o.id}">View order details</a> <span aria-hidden="true">|</span> <a href="#/invoice/${o.id}">Invoice</a></span></div>
     </header>
     <div class="order-card__body">
       <div class="order-card__items">
@@ -854,21 +988,25 @@
           <a class="order-item__img" href="#/p/${p.id}">${productSVG(p, { decorative: true })}</a>
           <div><a class="order-item__name" href="#/p/${p.id}">Aesop ${esc(p.name)}, ${esc(p.size)}</a>
           <p class="muted small">Qty ${l.qty}${l.gift ? ' · Gift' : ''}${l.sub ? ' · Subscribe &amp; refill' : ''}</p>
-          <button type="button" class="add-btn add-btn--sm" data-add="${p.id}">Buy it again</button></div>
+          <div class="order-item__btns"><button type="button" class="add-btn add-btn--sm" data-add="${p.id}">Buy it again</button>
+          <a class="pill-btn pill-btn--sm" href="#/p/${p.id}">View your item</a></div></div>
         </div>`; }).join('')}
       </div>
       <div class="order-card__actions">
         <button type="button" class="add-btn add-btn--wide" data-track="${o.id}">Track package</button>
         <button type="button" class="pill-btn pill-btn--wide" data-return="${o.id}" ${o.returned ? 'disabled' : ''}>${o.returned ? 'Return started' : 'Return or replace items'}</button>
         <button type="button" class="pill-btn pill-btn--wide" data-cancel="${o.id}">Cancel order</button>
+        <a class="pill-btn pill-btn--wide" href="#/review/${o.items[0].id}">Write a product review</a>
       </div>
     </div>
   </article>`;
 
   pages.orders = () => `<section class="orders">
-      <nav class="crumbs" aria-label="Breadcrumb"><a href="#/">Your Account</a> › Your Orders</nav>
-      <h1 class="orders__title">Your Orders</h1>
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="#/account">Your Account</a> › Your Orders</nav>
+      <div class="orders__top"><h1 class="orders__title">Your Orders</h1>
+        ${state.orders.length ? `<form class="orders__search" data-order-search role="search"><input type="search" name="q" placeholder="Search all orders" aria-label="Search all orders"><button class="dark-btn" type="submit">Search Orders</button></form>` : ''}</div>
       <p class="orders__count"><b>${plural(state.orders.length, 'order')}</b> placed in this browser</p>
+      <p class="orders__none muted" hidden>No orders match your search.</p>
       ${state.orders.length ? state.orders.map(orderCard).join('') :
         `<div class="cart-empty"><h2>You haven't placed any orders yet</h2><p>Orders you place in this concept appear here, with tracking and returns.</p><a class="add-btn" href="#/">Start shopping</a></div>`}
     </section>
@@ -915,7 +1053,7 @@
       ['Is everything sold here authentic?', 'Yes. Every unit ships from and is sold by Amazon, with a Transparency code that proves it came from Aesop and was stored correctly.'],
       ['Why is the price the same as aesop.fr?', 'Aesop sells at one price everywhere. You pay the aesop.fr price here, not the higher prices some resellers charge.'],
       ['When will my order arrive?', 'Prime orders placed before 23:59 arrive the next day. You can also choose Amazon Day Delivery at checkout to group your parcels.'],
-      ['How does Subscribe & refill work?', 'Choose Subscribe & refill on a hand wash and a 500 mL refill arrives every two months. Skip or cancel any time from Your Orders.'],
+      ['How does Subscribe & refill work?', 'Choose Subscribe & refill on a hand wash and a 500 mL refill arrives every two months. Skip, change or cancel any time from Your Subscribe & refill.'],
       ['How do I return an item?', 'Go to Your Orders, choose Return or replace items, and follow the steps. Aesop purchases are returnable within 30 days.'],
       ['Can I send a gift?', 'Yes. Tick "This will be a gift" in your basket to add a message and hide the price on the packing slip.']
     ];
@@ -942,7 +1080,13 @@
   function afterRender() {
     updateLocation();
     updateListButtons();
+    updateTileButtons();
   }
+
+  // Shared with account.js and browse.js
+  S.shop = { state, persist, refresh, live, openPanel, closePanel, confirmPanel, head, eur, plural, count, countOf, chosen,
+    subtotal, addToCart, updateCount, updateLocation, where, city, dayAfter, longDate, shortDate, shipTo, addrLines,
+    checkIcon, trashIcon, openAdded, toast };
   hooks.push(afterRender);
 
   updateCount();

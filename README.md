@@ -27,27 +27,30 @@ python3 -m http.server 4173
 
 To show the pitch notes while presenting, open the site with `?notes` added to the link, e.g. `https://aesop-amazon-concept.vercel.app/?notes`. Each page then shows which persona and problem it answers.
 
-## Shopping features (`js/shop.js`)
+## Shopping features (`js/shop.js`, `js/account.js`, `js/browse.js`)
 
 Every header, menu and product button works the way it does on Amazon:
 
 | Where | What it does |
 |---|---|
-| Deliver to | Choose a French postcode; updates the header, product pages and checkout |
+| Deliver to | Pick a saved address or enter a French postcode; updates the header, product pages and checkout |
 | EN | Language and currency menu |
-| Account & Lists | Menu with Wish List, Orders, Basket, Subscribe & refill, Customer Service |
-| Returns & Orders (`#/orders`) | Your orders: track package, return items, cancel, buy again |
-| Basket (`#/cart`) | Quantity stepper, delete, save for later, gift option, subtotal, checkout |
-| Checkout (`#/checkout`) | Address, delivery date choice, order summary, Place your order |
-| ☰ All | Slide-in menu with every store page and help links |
+| Account & Lists | Menu with Your Account, Orders, Subscribe & refill, Addresses, reviews, Wish List, browsing history |
+| Your Account (`#/account`) | Hub with Orders, Login & security, Prime, Addresses, Subscribe & refill, Lists, reviews, browsing history, Customer Service |
+| Your Addresses (`#/addresses`) | Add, edit, remove, set default (postcode fills in the town); the default is used at checkout |
+| Your Subscribe & refill (`#/subscriptions`) | Change frequency, skip next delivery, cancel, resubscribe. Created when you check out with Subscribe & refill |
+| Returns & Orders (`#/orders`) | Search orders, order details, printable invoice, track, return, cancel, buy again, view item, write a review |
+| Basket (`#/cart`) | Tick/untick items (unticked ones stay in the basket), select all, stepper, delete, save for later, gift, share |
+| Checkout (`#/checkout`) | Choose address, promo code box, delivery date, gift message, order summary, Place your order |
+| Product cards | Add to basket turns into a − 1 + stepper; the eye opens Quick look |
+| Search (`#/search/<term>`) | Sort (price, rating, best sellers) and filters (category, reviews, price, aroma, Prime) |
+| Product page | Hover zoom, full-view photos, Share, quantity, Subscribe & refill, gift, Buy Now, Add to List, Frequently bought together, Compare with similar items, customer reviews |
+| Write a product review (`#/review/<id>`) | Star rating, headline, review, public name; edit and delete; "Verified Purchase" if ordered here |
+| Browsing history (`#/history`) | Recently viewed strip on most pages; remove items, clear all, turn off |
+| ☰ All | Slide-in menu with every store and account page |
 | Today's Deals, Prime, Best Sellers, Customer Service | Their own pages (`#/deals`, `#/prime`, `#/best-sellers`, `#/help`) |
-| Search boxes | Live suggestions as you type (arrow keys + Enter) |
-| Product tiles | Add to basket opens the "Added to basket" panel; the eye opens Quick look |
-| Product page | Quantity, Subscribe & refill, gift options, Buy Now, Add to List, customer reviews |
-| Write a product review (`#/review/<id>`) | Star rating, headline, review, public name; required fields show errors. The review appears under Customer reviews with Edit and Delete, and "Verified Purchase" if that product was ordered in this browser |
-| Product photos | Hover a thumbnail to swap the photo; up to 7 thumbnails, then "+N"; click the photo for the full view (arrows, ← → keys, thumbnail grid, Esc) |
 
-Concept demo: there is **no sign-in and no payment form**. Checkout uses "Pay on delivery (demo)". The basket, lists, orders, reviews, postcode and language are saved in the visitor's own browser (localStorage), so they survive a refresh but are never sent anywhere.
+Concept demo: there is **no sign-in and no payment form**. Checkout uses "Pay on delivery (demo)". The basket, lists, orders, addresses, subscriptions, reviews, browsing history, postcode and language are saved in the visitor's own browser (localStorage), so they survive a refresh but are never sent anywhere.
 
 ## Deploy
 
