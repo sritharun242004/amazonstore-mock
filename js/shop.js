@@ -11,6 +11,9 @@
 
   /* ---------- state, saved in this browser ---------- */
 
+  // app.js reads the chosen currency through STORE.currency
+  Object.defineProperty(S, 'currency', { get: () => state.currency });
+
   const KEY = 'aesop-concept:';
   const load = (k, fallback) => {
     try { const v = localStorage.getItem(KEY + k); return v ? JSON.parse(v) : fallback; } catch { return fallback; }
@@ -24,6 +27,7 @@
     orders: load('orders', []),
     zip: load('zip', '75011'),
     lang: load('lang', 'EN'),
+    currency: load('currency', 'EUR'),
     follow: load('follow', false),
     reviews: load('reviews', {}),                          // { [id]: { rating, title, body, name, date } }
     reviewName: load('reviewName', 'Amazon Customer'),
@@ -33,10 +37,10 @@
     history: load('history', []).filter(byId),              // recently viewed product ids, newest first
     historyOn: load('historyOn', true)
   };
-  const persist = () => ['cart', 'saved', 'list', 'orders', 'zip', 'lang', 'follow', 'reviews', 'reviewName',
+  const persist = () => ['cart', 'saved', 'list', 'orders', 'zip', 'lang', 'currency', 'follow', 'reviews', 'reviewName',
     'addresses', 'defaultAddr', 'subs', 'history', 'historyOn'].forEach(k => save(k, state[k]));
 
-  const eur = n => '€' + n.toFixed(2);
+  const eur = n => S.money(n);
   const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`;
   const count = () => state.cart.reduce((n, i) => n + i.qty, 0);
   const subtotal = (lines = state.cart) => lines.reduce((s, i) => s + byId(i.id).price * i.qty, 0);
@@ -88,7 +92,39 @@
     });
   }
   function updateLocation() { document.querySelectorAll('[data-loc-label]').forEach(el => { el.textContent = where(); }); }
-  function updateLang() { $('#langLabel').textContent = state.lang; }
+  function updateLang() {
+    $('#langLabel').textContent = state.lang;
+    document.documentElement.lang = state.lang === 'FR' ? 'fr' : 'en';
+    const chip = document.querySelector('[data-lang-chip]');
+    if (chip) chip.textContent = state.lang === 'FR' ? 'Français' : 'English';
+    const curChip = document.querySelector('[data-cur-chip]');
+    if (curChip) curChip.textContent = curLabel(state.currency);
+  }
+  // Amazon's wording: "€ - EUR - Euro", but "CHF - Swiss Franc" when the symbol is the code
+  const curLabel = code => { const c = S.CURRENCIES[code]; return c.sym.trim() === code ? `${code} - ${c.name}` : `${c.sym.trim()} - ${code} - ${c.name}`; };
+  const frFlag = '<svg viewBox="0 0 3 2" width="20" height="14" aria-hidden="true"><rect width="1" height="2" fill="#0055A4"/><rect x="1" width="1" height="2" fill="#fff"/><rect x="2" width="1" height="2" fill="#EF4135"/></svg>';
+
+  // Language: French translates the interface (js/i18n.js); going back to English reloads the page.
+  // Currency: prices are redrawn in place.
+  function setLang(lang) {
+    if (lang === state.lang) return;
+    state.lang = lang;
+    persist();
+    if (lang === 'EN') { location.reload(); return; }
+    updateLang();
+    S.i18n?.apply();
+    toast('<b>Langue : français</b> Les menus, boutons, panier et paiement sont en français.');
+  }
+  function setCurrency(code) {
+    if (code === state.currency || !S.CURRENCIES[code]) return;
+    state.currency = code;
+    persist();
+    updateLang();
+    const y = scrollY;
+    S.render();
+    scrollTo(0, y);
+    toast(code === 'EUR' ? '<b>Prices in euros</b>' : `<b>Prices in ${S.CURRENCIES[code].name}s</b> Indicative rate: €1 = ${S.CURRENCIES[code].sym.trim()} ${S.CURRENCIES[code].rate}. You are still charged in euros.`);
+  }
   function updateFollow() {
     const b = $('#followBtn');
     b.setAttribute('aria-pressed', state.follow);
@@ -286,13 +322,18 @@
           <div><h3>Your Account</h3><a href="#/account">Your Account</a><a href="#/orders">Your Orders (${state.orders.length})</a><a href="#/subscriptions">Your Subscribe &amp; refill</a><a href="#/addresses">Your Addresses</a><a href="#/my-reviews">Your reviews</a><a href="#/help">Customer Service</a></div>
         </div>
       </div>`,
-    lang: () => `<form class="fly-lang" data-lang-form>
+    lang: () => `<form class="fly-lang" data-lang-form aria-label="Language and currency">
         <p class="fly-lang__title">Change language</p>
-        <label><input type="radio" name="lang" value="FR" ${state.lang === 'FR' ? 'checked' : ''}> Français - FR</label>
+        <label><input type="radio" name="lang" value="FR" ${state.lang === 'FR' ? 'checked' : ''}> français - FR</label>
+        <hr>
         <label><input type="radio" name="lang" value="EN" ${state.lang === 'EN' ? 'checked' : ''}> English - EN</label>
-        <p class="muted small">The concept is written in English for the class pitch.</p>
-        <p class="fly-lang__title">Currency</p>
-        <p class="small">€ - EUR - Euro</p>
+        <hr>
+        <p class="fly-lang__title">Change currency</p>
+        ${Object.entries(S.CURRENCIES).map(([code, c]) => `<label><input type="radio" name="currency" value="${code}" ${state.currency === code ? 'checked' : ''}> ${curLabel(code)}</label>`).join('')}
+        <a class="fly-lang__more" href="#/settings">See all</a>
+        <hr>
+        <p class="fly-lang__shop">${frFlag} You are shopping on Amazon.fr</p>
+        <button type="button" class="linklike fly-lang__country" data-open="country">Change country/region</button>
       </form>`
   };
   fly.addEventListener('mouseenter', () => clearTimeout(flyTimer));
@@ -415,6 +456,7 @@
       const kind = opener.dataset.open;
       if (kind === 'location') { e.preventDefault(); openLocation(); return; }
       if (kind === 'menu') { e.preventDefault(); openMenu(); return; }
+      if (kind === 'country') { e.preventDefault(); closeFlyout(); openCountry(); return; }
       if (kind === 'lang-menu') { e.preventDefault(); openPanel(`${head('Language settings')}<div class="panel__body">${flyoutHtml.lang()}</div>`, { label: 'Language settings' }); return; }
       if (kind === 'account' || kind === 'lang') {
         e.preventDefault();
@@ -576,12 +618,8 @@
     if (t.matches('[data-gift-line]')) { state.cart[Number(t.dataset.giftLine)].gift = t.checked; persist(); return; }
     if (t.matches('[data-sel-line]')) { state.cart[Number(t.dataset.selLine)].sel = t.checked; persist(); refresh(); document.querySelector(`[data-sel-line="${t.dataset.selLine}"]`)?.focus(); return; }
     if (t.matches('[data-gift-all]')) { state.cart.forEach(l => { l.gift = t.checked; }); persist(); refresh(); return; }
-    if (t.closest('[data-lang-form]') && t.name === 'lang') {
-      state.lang = t.value;
-      persist();
-      updateLang();
-      toast(t.value === 'FR' ? '<b>Langue : Français</b> The concept itself stays in English for the pitch.' : '<b>Language: English</b>');
-    }
+    if (t.closest('[data-lang-form]') && t.name === 'lang') { closeFlyout(); closePanel(false); setLang(t.value); return; }
+    if (t.closest('[data-lang-form]') && t.name === 'currency') { closeFlyout(); closePanel(false); setCurrency(t.value); return; }
   });
 
   // Your Orders: filter the cards by product name or order number
@@ -1069,7 +1107,55 @@
       </section>`;
   };
 
+  pages.settings = () => `<section class="acct acct--settings">
+      <form class="settings" data-settings-form>
+        <div class="settings__grid">
+          <fieldset class="settings__block">
+            <legend>Language settings</legend>
+            <p>Select the language you prefer for browsing and shopping.</p>
+            <label class="co-radio"><input type="radio" name="lang" value="FR" ${state.lang === 'FR' ? 'checked' : ''}> <span>français - FR</span></label>
+            <hr>
+            <label class="co-radio"><input type="radio" name="lang" value="EN" ${state.lang === 'EN' ? 'checked' : ''}> <span>English - EN</span></label>
+          </fieldset>
+          <aside class="settings__note"><h2>Translation</h2><p>Français translates the shopping interface: menus, buttons, basket, checkout and account pages. Aesop's product stories stay in English for this class concept.</p></aside>
+        </div>
+        <fieldset class="settings__block">
+          <legend>Currency settings</legend>
+          <p>Select the currency you want to shop with.</p>
+          ${Object.entries(S.CURRENCIES).map(([code, c]) => `<label class="co-radio"><input type="radio" name="currency" value="${code}" ${state.currency === code ? 'checked' : ''}> <span>${curLabel(code)}${code === 'EUR' ? ' (Default)' : ''}</span></label>`).join('')}
+          <p class="muted small">Other currencies use indicative exchange rates. Orders are always charged in euros.</p>
+        </fieldset>
+        <div class="settings__actions"><a class="pill-btn" href="#/">Cancel</a><button type="submit" class="add-btn">Save changes</button></div>
+      </form>
+    </section>`;
+
+  document.addEventListener('submit', e => {
+    const form = e.target.closest('[data-settings-form]');
+    if (!form) return;
+    e.preventDefault();
+    const lang = form.lang.value, code = form.currency.value;
+    if (code !== state.currency) { state.currency = code; persist(); updateLang(); }
+    if (lang !== state.lang) {
+      state.lang = lang; persist();
+      if (lang === 'EN') { location.hash = '#/'; location.reload(); return; }
+      updateLang(); S.i18n?.apply();
+    }
+    location.hash = '#/';
+    toast(state.lang === 'FR' ? '<b>Paramètres enregistrés</b>' : '<b>Settings saved</b>');
+  });
+
+  function openCountry() {
+    openPanel(`${head('Website (Country/Region)')}<div class="panel__body">
+        <p>Select your preferred country/region website.</p>
+        <label class="loc-form"><span class="visually-hidden">Country/region</span>
+          <select class="settings__select" disabled><option>France (Amazon.fr)</option></select></label>
+        <p class="muted small">This concept exists only for Amazon.fr, where the Aesop store would launch first.</p>
+        <div class="panel__actions"><button type="button" class="add-btn" data-close>Go to website</button></div>
+      </div>`, { label: 'Choose a country or region' });
+  }
+
   Object.assign(titles, {
+    settings: 'Language settings',
     cart: 'Amazon.fr Shopping Basket', checkout: 'Amazon.fr Checkout', order: 'Thank you for your order',
     orders: 'Your Orders', lists: 'Your Wish List', 'best-sellers': 'Best Sellers in Aesop',
     deals: "Today's Deals", prime: 'Prime delivery', help: 'Customer Service', review: 'Create review'

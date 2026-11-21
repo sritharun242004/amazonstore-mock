@@ -27,14 +27,14 @@ python3 -m http.server 4173
 
 To show the pitch notes while presenting, open the site with `?notes` added to the link, e.g. `https://aesop-amazon-concept.vercel.app/?notes`. Each page then shows which persona and problem it answers.
 
-## Shopping features (`js/shop.js`, `js/account.js`, `js/browse.js`)
+## Shopping features (`js/shop.js`, `js/account.js`, `js/browse.js`, `js/i18n.js`)
 
 Every header, menu and product button works the way it does on Amazon:
 
 | Where | What it does |
 |---|---|
 | Deliver to | Pick a saved address or enter a French postcode; updates the header, product pages and checkout |
-| EN | Language and currency menu |
+| EN (flag) | Amazon-style menu: français/English, currency (EUR, GBP, USD, CHF at indicative rates; orders stay in euros), "See all" settings page (`#/settings`), change country/region. Français translates the interface (`js/i18n.js`); product stories stay in English |
 | Account & Lists | Menu with Your Account, Orders, Subscribe & refill, Addresses, reviews, Wish List, browsing history |
 | Your Account (`#/account`) | Hub with Orders, Login & security, Prime, Addresses, Subscribe & refill, Lists, reviews, browsing history, Customer Service |
 | Your Addresses (`#/addresses`) | Add, edit, remove, set default (postcode fills in the town); the default is used at checkout |

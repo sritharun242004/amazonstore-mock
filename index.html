@@ -11,7 +11,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Belleza&family=Cormorant+Garamond:wght@500&family=Hanken+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%237A3E12'/%3E%3Ctext x='16' y='23' font-family='Georgia' font-size='20' fill='%23FFFEF2' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23131921'/%3E%3Cpath d='M6 9h3l2.6 11.5h11.6L25.5 12H10.2' fill='none' stroke='%23FF9900' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='13' cy='24.5' r='1.8' fill='%23FF9900'/%3E%3Ccircle cx='21.5' cy='24.5' r='1.8' fill='%23FF9900'/%3E%3C/svg%3E">
 </head>
 <body>
 
@@ -185,8 +185,9 @@
     </div>
     <div class="amz-footer__mid">
       <span class="amz-logo amz-logo--small" aria-hidden="true"><span class="amz-logo__word">Amazon.fr</span><span class="amz-logo__tag">Concept</span></span>
-      <button type="button" class="amz-footer__chip" data-open="lang">English</button>
-      <button type="button" class="amz-footer__chip" data-open="location">France</button>
+      <button type="button" class="amz-footer__chip" data-open="lang" data-lang-chip>English</button>
+      <a class="amz-footer__chip" href="#/settings" data-cur-chip>€ EUR - Euro</a>
+      <button type="button" class="amz-footer__chip" data-open="country">France</button>
     </div>
     <div class="amz-footer__legal">
       <p class="amz-footer__disclaimer">Student concept – not affiliated with Aesop or Amazon.</p>
@@ -203,5 +204,6 @@
   <script src="js/shop.js"></script>
   <script src="js/account.js"></script>
   <script src="js/browse.js"></script>
+  <script src="js/i18n.js"></script>
 </body>
 </html>

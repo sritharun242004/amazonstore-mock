@@ -44,9 +44,21 @@
   const tomorrow = tmr.toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
   const tomorrowShort = tmr.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
 
+  // Prices are stored in euros. Like Amazon's currency converter, other currencies are shown at
+  // indicative rates; orders are still placed in euros.
+  const CURRENCIES = {
+    EUR: { sym: '€', rate: 1, name: 'Euro' },
+    GBP: { sym: '£', rate: 0.87, name: 'British Pound' },
+    USD: { sym: 'US$', rate: 1.16, name: 'US Dollar' },
+    CHF: { sym: 'CHF ', rate: 0.93, name: 'Swiss Franc' }
+  };
+  const cur = () => CURRENCIES[window.STORE?.currency] || CURRENCIES.EUR;
+  const money = n => cur().sym + (n * cur().rate).toFixed(2);
+
   function price(p, cls = '') {
-    const [whole, frac] = p.price.toFixed(2).split('.');
-    return `<span class="price ${cls}" aria-label="€${p.price.toFixed(2)}"><span class="price__sym">€</span><span class="price__whole">${whole}</span><span class="price__frac">${frac}</span></span>`;
+    const c = cur(), v = (p.price * c.rate).toFixed(2);
+    const [whole, frac] = v.split('.');
+    return `<span class="price ${cls}" aria-label="${c.sym}${v}"><span class="price__sym">${c.sym.trim()}</span><span class="price__whole">${whole}</span><span class="price__frac">${frac}</span></span>`;
   }
 
   function stars(p, withCount = true) {
@@ -831,7 +843,7 @@
   // shop.js (basket, checkout, orders, menus) registers its pages, titles and hooks here
   const titles = {};
   const hooks = [];
-  window.STORE = { pages, titles, hooks, products, byId, esc, productSVG, price, stars, primeBadge, soldBy, parity,
+  window.STORE = { pages, titles, hooks, products, byId, esc, productSVG, price, money, CURRENCIES, stars, primeBadge, soldBy, parity,
     delivery, tile, grid, carousel, toast, render, tomorrow, tomorrowShort, $ };
 
   window.addEventListener('hashchange', render);
