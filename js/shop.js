@@ -113,7 +113,7 @@
     if (lang === 'EN') { location.reload(); return; }
     updateLang();
     S.i18n?.apply();
-    toast('<b>Langue : français</b> Les menus, boutons, panier et paiement sont en français.');
+    toast('<b>Langue : français</b> Toute la boutique est désormais en français.');
   }
   function setCurrency(code) {
     if (code === state.currency || !S.CURRENCIES[code]) return;
@@ -371,7 +371,7 @@
     const go = id => { hide(); input.value = ''; input.blur(); location.hash = '#/p/' + id; };
     input.addEventListener('input', () => {
       const t = input.value.trim().toLowerCase();
-      items = t ? products.filter(p => `${p.name} ${p.aromaText} ${p.family || ''}`.toLowerCase().includes(t)).slice(0, 6) : [];
+      items = t ? products.filter(p => `${p.name} ${p.nameEn || ''} ${p.aromaText} ${p.family || ''}`.toLowerCase().includes(t)).slice(0, 6) : [];
       if (!items.length) return hide();
       box.innerHTML = items.map((p, i) => {
         const at = p.name.toLowerCase().indexOf(t);
@@ -1117,7 +1117,7 @@
             <hr>
             <label class="co-radio"><input type="radio" name="lang" value="EN" ${state.lang === 'EN' ? 'checked' : ''}> <span>English - EN</span></label>
           </fieldset>
-          <aside class="settings__note"><h2>Translation</h2><p>Français translates the shopping interface: menus, buttons, basket, checkout and account pages. Aesop's product stories stay in English for this class concept.</p></aside>
+          <aside class="settings__note"><h2>Translation</h2><p>Français shows the whole store in French, including product names and descriptions. Where aesop.fr has no French name, the concept provides its own translation.</p></aside>
         </div>
         <fieldset class="settings__block">
           <legend>Currency settings</legend>

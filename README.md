@@ -34,7 +34,7 @@ Every header, menu and product button works the way it does on Amazon:
 | Where | What it does |
 |---|---|
 | Deliver to | Pick a saved address or enter a French postcode; updates the header, product pages and checkout |
-| EN (flag) | Amazon-style menu: français/English, currency (EUR, GBP, USD, CHF at indicative rates; orders stay in euros), "See all" settings page (`#/settings`), change country/region. Français translates the interface (`js/i18n.js`); product stories stay in English |
+| EN (flag) | Amazon-style menu: français/English, currency (EUR, GBP, USD, CHF at indicative rates; orders stay in euros), "See all" settings page (`#/settings`), change country/region. Français switches the whole store to French (`js/i18n.js`): interface, editorial pages and products. Product names and descriptions live in `fr` blocks in `js/data.js` (aesop.fr names where they exist, our own translation otherwise). Prices, ratings and counts use French formats (30,00 €, 4,9, 2 874) |
 | Account & Lists | Menu with Your Account, Orders, Subscribe & refill, Addresses, reviews, Wish List, browsing history |
 | Your Account (`#/account`) | Hub with Orders, Login & security, Prime, Addresses, Subscribe & refill, Lists, reviews, browsing history, Customer Service |
 | Your Addresses (`#/addresses`) | Add, edit, remove, set default (postcode fills in the town); the default is used at checkout |

@@ -29,7 +29,21 @@ window.AESOP = {
         'Amber glass bottle with pump; a 500 mL refill is available',
         'Leaping Bunny approved: certified cruelty-free',
         'Sold and shipped by Amazon at the aesop.fr price'
-      ]
+      ],
+      // French listing: aesop.fr names where they exist, our own translation otherwise
+      fr: {
+        name: 'Gel Lavant Révérence Aromatique pour les Mains',
+        size: '500 ml',
+        aromaText: 'Boisé, terreux. Racine de vétiver, petit grain, écorce de bergamote.',
+        tagline: 'Un gel lavant exfoliant pour les mains, à la pierre ponce finement moulue.',
+        bullets: [
+          'Exfolie et nettoie en douceur grâce à la pierre ponce finement moulue',
+          'Arôme boisé et terreux de racine de vétiver, de petit grain et d’écorce de bergamote',
+          'Flacon en verre ambré avec pompe ; une recharge de 500 ml est disponible',
+          'Approuvé Leaping Bunny : certifié sans cruauté animale',
+          'Vendu et expédié par Amazon au prix d’aesop.fr'
+        ]
+      }
     },
     {
       id: 'resurrection-hand-wash',
@@ -49,7 +63,20 @@ window.AESOP = {
         'Mandarin rind, rosemary leaf and cedar atlas',
         'Use whenever and as often as required',
         'Resold elsewhere on Amazon.fr for €79.35; here it is €39'
-      ]
+      ],
+      // French listing: aesop.fr names where they exist, our own translation otherwise
+      fr: {
+        name: 'Gel Lavant Résurrection Aromatique pour les Mains',
+        size: '500 ml',
+        aromaText: 'Agrumes, boisé, herbacé. Écorce de mandarine, feuille de romarin, cèdre de l’Atlas.',
+        tagline: 'Un gel lavant doux pour les mains qui travaillent dur.',
+        bullets: [
+          'Un gel lavant d’exception pour les mains qui travaillent dur',
+          'Écorce de mandarine, feuille de romarin et cèdre de l’Atlas',
+          'À utiliser aussi souvent que nécessaire',
+          'Revendu ailleurs sur Amazon.fr à 79,35 € ; ici, il coûte 39 €'
+        ]
+      }
     },
     {
       id: 'resurrection-hand-balm',
@@ -69,7 +96,20 @@ window.AESOP = {
         'Absorbs quickly with no greasy finish',
         'Pocket-sized 75 mL tube, easy to keep at a desk',
         'Resold elsewhere on Amazon.fr for up to €59; here it is €30'
-      ]
+      ],
+      // French listing: aesop.fr names where they exist, our own translation otherwise
+      fr: {
+        name: 'Baume Aromatique Résurrection pour les Mains',
+        size: '75 ml',
+        aromaText: 'Agrumes, boisé. Écorce de mandarine, feuille de romarin, cèdre de l’Atlas.',
+        tagline: 'Un baume riche, vite absorbé, pour les mains et les cuticules.',
+        bullets: [
+          'Un riche mélange d’extraits botaniques qui apaise et adoucit les mains',
+          'Pénètre rapidement sans laisser de film gras',
+          'Tube de 75 ml, facile à garder sur un bureau',
+          'Revendu ailleurs sur Amazon.fr jusqu’à 59 € ; ici, il coûte 30 €'
+        ]
+      }
     },
     {
       id: 'trusted-companions',
@@ -88,7 +128,19 @@ window.AESOP = {
         'Three hand-care essentials in one gift-ready carton',
         'Cleanse and nourish: a complete hand routine',
         'Arrives tomorrow with Prime'
-      ]
+      ],
+      // French listing: aesop.fr names where they exist, our own translation otherwise
+      fr: {
+        name: 'Fidèles Compagnons, Trio Soins des Mains',
+        size: '3 formules',
+        aromaText: 'Trois arômes pour les mains, à garder près du lavabo.',
+        tagline: 'Trois essentiels pour les mains, à garder près du lavabo.',
+        bullets: [
+          'Trois essentiels pour les mains dans un coffret prêt à offrir',
+          'Nettoyer et nourrir : un rituel complet pour les mains',
+          'Livré demain avec Prime'
+        ]
+      }
     },
     {
       id: 'reverence-refill',
@@ -107,7 +159,19 @@ window.AESOP = {
         'Screw-cap refill for your Reverence pump bottle',
         'Less packaging, same formulation',
         'Subscribe and it arrives before you run out'
-      ]
+      ],
+      // French listing: aesop.fr names where they exist, our own translation otherwise
+      fr: {
+        name: 'Recharge Gel Lavant Révérence Aromatique pour les Mains',
+        size: '500 ml',
+        aromaText: 'Boisé, terreux. Racine de vétiver, petit grain, écorce de bergamote.',
+        tagline: 'Remplissez votre flacon-pompe au lieu d’en acheter un nouveau.',
+        bullets: [
+          'Recharge à bouchon vissé pour votre flacon-pompe Révérence',
+          'Moins d’emballage, la même formule',
+          'Abonnez-vous : elle arrive avant que vous ne soyez à court'
+        ]
+      }
     },
     {
       id: 'geranium-body-cleanser',
@@ -125,7 +189,19 @@ window.AESOP = {
         'Cleanses without stripping the skin',
         'Green, herbaceous aroma for morning showers',
         'Amber glass bottle with pump'
-      ]
+      ],
+      // French listing: aesop.fr names where they exist, our own translation otherwise
+      fr: {
+        name: 'Gel Nettoyant à la Feuille de Géranium pour le Corps',
+        size: '500 ml',
+        aromaText: 'Vert, hespéridé, frais.',
+        tagline: 'Un gel nettoyant doux et revigorant pour le corps.',
+        bullets: [
+          'Nettoie sans dessécher la peau',
+          'Arôme vert et herbacé pour les douches du matin',
+          'Flacon en verre ambré avec pompe'
+        ]
+      }
     },
     {
       id: 'evergreen-affections',
@@ -144,7 +220,19 @@ window.AESOP = {
         'Three Geranium Leaf formulations to cleanse and hydrate the body',
         'Green, uplifting aroma that stays light on the skin',
         'Gift-ready carton, arrives tomorrow with Prime'
-      ]
+      ],
+      // French listing: aesop.fr names where they exist, our own translation otherwise
+      fr: {
+        name: 'Affections Persistantes, Trio Soins du Corps',
+        size: '3 formules',
+        aromaText: 'Feuille de Géranium : vert, hespéridé, herbacé.',
+        tagline: 'Trois formules à la Feuille de Géranium pour le corps.',
+        bullets: [
+          'Trois formules à la Feuille de Géranium pour nettoyer et hydrater le corps',
+          'Un arôme vert et revigorant, qui reste léger sur la peau',
+          'Coffret prêt à offrir, livré demain avec Prime'
+        ]
+      }
     },
     {
       id: 'marrakech-intense',
@@ -165,7 +253,20 @@ window.AESOP = {
         'Notes of clove, cardamom, jasmine and sandalwood',
         'Unisex, made to be worn day or night',
         'Sold by Amazon: authentic stock, Transparency-coded'
-      ]
+      ],
+      // French listing: aesop.fr names where they exist, our own translation otherwise
+      fr: {
+        name: 'Marrakech Intense Eau de Parfum',
+        size: '50 ml',
+        aromaText: 'Boisé, épicé. Clou de girofle, cardamome, jasmin, bois de santal.',
+        tagline: 'Un parfum chaud et épicé, inspiré par Marrakech.',
+        bullets: [
+          'Eau de parfum épicée et boisée',
+          'Notes de clou de girofle, de cardamome, de jasmin et de bois de santal',
+          'Mixte, à porter de jour comme de nuit',
+          'Vendu par Amazon : stock authentique, code Transparency'
+        ]
+      }
     },
     {
       id: 'hwyl',
@@ -181,7 +282,19 @@ window.AESOP = {
       rating: 4.6, reviews: 352,
       gift: true,
       tagline: 'A smoky, woody fragrance that evokes ancient forests.',
-      bullets: ['Smoky, woody eau de parfum', 'Cypress, frankincense and vetiver', 'Unisex']
+      bullets: ['Smoky, woody eau de parfum', 'Cypress, frankincense and vetiver', 'Unisex'],
+      // French listing: aesop.fr names where they exist, our own translation otherwise
+      fr: {
+        name: 'Hwyl Eau de Parfum',
+        size: '50 ml',
+        aromaText: 'Boisé, fumé. Cyprès, encens, vétiver.',
+        tagline: 'Un parfum boisé et fumé qui évoque les forêts anciennes.',
+        bullets: [
+          'Eau de parfum boisée et fumée',
+          'Cyprès, encens et vétiver',
+          'Mixte'
+        ]
+      }
     },
     {
       id: 'tacit',
@@ -196,7 +309,19 @@ window.AESOP = {
       aromaText: 'Fresh, citrus. Yuzu, basil, vetiver.',
       rating: 4.6, reviews: 418,
       tagline: 'A bright citrus and herbaceous fragrance.',
-      bullets: ['Fresh, citrus eau de parfum', 'Yuzu, basil and vetiver', 'Unisex']
+      bullets: ['Fresh, citrus eau de parfum', 'Yuzu, basil and vetiver', 'Unisex'],
+      // French listing: aesop.fr names where they exist, our own translation otherwise
+      fr: {
+        name: 'Tacit Eau de Parfum',
+        size: '50 ml',
+        aromaText: 'Frais, hespéridé. Yuzu, basilic, vétiver.',
+        tagline: 'Un parfum lumineux, hespéridé et herbacé.',
+        bullets: [
+          'Eau de parfum fraîche et hespéridée',
+          'Yuzu, basilic et vétiver',
+          'Mixte'
+        ]
+      }
     },
     {
       id: 'karst',
@@ -211,7 +336,19 @@ window.AESOP = {
       aromaText: 'Fresh, aquatic. Juniper, cumin, sandalwood.',
       rating: 4.5, reviews: 207,
       tagline: 'A fresh, coastal fragrance.',
-      bullets: ['Fresh, aquatic eau de parfum', 'Juniper, cumin and sandalwood', 'Unisex']
+      bullets: ['Fresh, aquatic eau de parfum', 'Juniper, cumin and sandalwood', 'Unisex'],
+      // French listing: aesop.fr names where they exist, our own translation otherwise
+      fr: {
+        name: 'Karst Eau de Parfum',
+        size: '50 ml',
+        aromaText: 'Frais, aquatique. Genièvre, cumin, bois de santal.',
+        tagline: 'Un parfum frais aux accents côtiers.',
+        bullets: [
+          'Eau de parfum fraîche et aquatique',
+          'Genièvre, cumin et bois de santal',
+          'Mixte'
+        ]
+      }
     },
     {
       id: 'post-poo-drops',
@@ -233,7 +370,21 @@ window.AESOP = {
         'Key ingredients: tangerine peel, ylang-ylang, mandarin peel',
         'Child-resistant cap: press down and turn anticlockwise to open',
         'A witty, useful gift for €30'
-      ]
+      ],
+      // French listing: aesop.fr names where they exist, our own translation otherwise
+      fr: {
+        name: 'Post-Poo Drops, Gouttes Anti-Odeur',
+        size: '100 ml',
+        aromaText: 'Hespéridé, floral, frais. Écorce de tangerine, ylang-ylang, écorce de mandarine.',
+        tagline: 'Quelques gouttes après avoir tiré la chasse. Le prochain visiteur n’en saura rien.',
+        bullets: [
+          'Versez quelques gouttes dans la cuvette après avoir tiré la chasse, pour le visiteur suivant',
+          'Un mélange d’extraits botaniques aux notes d’agrumes vives et florales subtiles',
+          'Ingrédients clés : écorce de tangerine, ylang-ylang, écorce de mandarine',
+          'Bouchon de sécurité enfant : appuyez et tournez dans le sens inverse des aiguilles d’une montre',
+          'Un cadeau drôle et utile pour 30 €'
+        ]
+      }
     },
     {
       id: 'cythera-room-spray',
@@ -248,7 +399,19 @@ window.AESOP = {
       rating: 4.6, reviews: 388,
       gift: true,
       tagline: 'A woody, herbaceous mist for any room.',
-      bullets: ['Spray into the air, away from fabrics', 'Woody, herbaceous aroma', '100 mL amber glass']
+      bullets: ['Spray into the air, away from fabrics', 'Woody, herbaceous aroma', '100 mL amber glass'],
+      // French listing: aesop.fr names where they exist, our own translation otherwise
+      fr: {
+        name: 'Spray d’Intérieur Aromatique Cythera',
+        size: '100 ml',
+        aromaText: 'Boisé, herbacé.',
+        tagline: 'Une brume boisée et herbacée pour toutes les pièces.',
+        bullets: [
+          'Vaporisez dans l’air, loin des tissus',
+          'Arôme boisé et herbacé',
+          'Verre ambré, 100 ml'
+        ]
+      }
     },
     {
       id: 'olous-room-spray',
@@ -262,7 +425,19 @@ window.AESOP = {
       aromaText: 'Fresh, citrus.',
       rating: 4.6, reviews: 264,
       tagline: 'A bright, citrus mist that lifts a room.',
-      bullets: ['Spray into the air, away from fabrics', 'Fresh, citrus aroma', '100 mL amber glass']
+      bullets: ['Spray into the air, away from fabrics', 'Fresh, citrus aroma', '100 mL amber glass'],
+      // French listing: aesop.fr names where they exist, our own translation otherwise
+      fr: {
+        name: 'Spray d’Intérieur Aromatique Olous',
+        size: '100 ml',
+        aromaText: 'Frais, hespéridé.',
+        tagline: 'Une brume lumineuse aux agrumes qui réveille une pièce.',
+        bullets: [
+          'Vaporisez dans l’air, loin des tissus',
+          'Arôme frais et hespéridé',
+          'Verre ambré, 100 ml'
+        ]
+      }
     },
     {
       id: 'ptolemy-candle',
@@ -277,7 +452,19 @@ window.AESOP = {
       rating: 4.7, reviews: 301,
       gift: true,
       tagline: 'A slow-burning candle with a woody, green aroma.',
-      bullets: ['About 60 hours of burn time', 'Woody, green aroma', 'Reusable vessel']
+      bullets: ['About 60 hours of burn time', 'Woody, green aroma', 'Reusable vessel'],
+      // French listing: aesop.fr names where they exist, our own translation otherwise
+      fr: {
+        name: 'Bougie Aromatique Ptolemy',
+        size: '300 g',
+        aromaText: 'Boisé, vert. Cèdre, vétiver, cyprès.',
+        tagline: 'Une bougie à combustion lente, à l’arôme boisé et vert.',
+        bullets: [
+          'Environ 60 heures de combustion',
+          'Arôme boisé et vert',
+          'Contenant réutilisable'
+        ]
+      }
     },
     {
       id: 'arms-outstretched',
@@ -296,7 +483,19 @@ window.AESOP = {
         'Three hand balms in one gift-ready carton',
         'Arrives tomorrow with Prime',
         'Add a gift message at checkout'
-      ]
+      ],
+      // French listing: aesop.fr names where they exist, our own translation otherwise
+      fr: {
+        name: 'À Bras Ouverts, Trio de Baumes pour les Mains',
+        size: '3 baumes pour les mains',
+        aromaText: 'Trois arômes de baume pour les mains à découvrir.',
+        tagline: 'Trois baumes hydratants pour des mains qui le méritent.',
+        bullets: [
+          'Trois baumes pour les mains dans un coffret prêt à offrir',
+          'Livré demain avec Prime',
+          'Ajoutez un message cadeau lors de la commande'
+        ]
+      }
     },
     {
       id: 'gentle-embraces',
@@ -315,7 +514,19 @@ window.AESOP = {
         'A hand and body pairing in one gift-ready carton',
         'Arrives tomorrow with Prime',
         'Add a gift message at checkout'
-      ]
+      ],
+      // French listing: aesop.fr names where they exist, our own translation otherwise
+      fr: {
+        name: 'Douces Étreintes, Duo Mains et Corps',
+        size: '2 formules',
+        aromaText: 'Un duo mains et corps dans un coffret cadeau.',
+        tagline: 'Un duo mains et corps, emballé et prêt à offrir.',
+        bullets: [
+          'Un duo mains et corps dans un coffret prêt à offrir',
+          'Livré demain avec Prime',
+          'Ajoutez un message cadeau lors de la commande'
+        ]
+      }
     }
   ],
 

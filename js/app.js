@@ -53,17 +53,22 @@
     CHF: { sym: 'CHF ', rate: 0.93, name: 'Swiss Franc' }
   };
   const cur = () => CURRENCIES[window.STORE?.currency] || CURRENCIES.EUR;
-  const money = n => cur().sym + (n * cur().rate).toFixed(2);
+  // In French, Amazon.fr writes "30,00 €", "4,9" and "2 874"
+  const isFR = () => window.STORE?.shop?.state.lang === 'FR';
+  const money = n => { const v = (n * cur().rate).toFixed(2); return isFR() ? `${v.replace('.', ',')} ${cur().sym.trim()}` : cur().sym + v; };
+  const num = n => n.toLocaleString(isFR() ? 'fr-FR' : 'en-GB');
+  const rate1 = r => isFR() ? r.toFixed(1).replace('.', ',') : r.toFixed(1);
 
   function price(p, cls = '') {
     const c = cur(), v = (p.price * c.rate).toFixed(2);
     const [whole, frac] = v.split('.');
+    if (isFR()) return `<span class="price price--fr ${cls}" aria-label="${whole},${frac} ${c.sym.trim()}"><span class="price__whole">${whole}</span><span class="price__frac">,${frac}</span><span class="price__sym">${c.sym.trim()}</span></span>`;
     return `<span class="price ${cls}" aria-label="${c.sym}${v}"><span class="price__sym">${c.sym.trim()}</span><span class="price__whole">${whole}</span><span class="price__frac">${frac}</span></span>`;
   }
 
   function stars(p, withCount = true) {
     const pct = (p.rating / 5) * 100;
-    return `<span class="rating"><span class="rating__num">${p.rating.toFixed(1)}</span><span class="stars" role="img" aria-label="${p.rating} out of 5 stars"><span class="stars__fill" style="width:${pct}%"></span></span>${withCount ? `<a class="rating__count" href="#/p/${p.id}/reviews">${p.reviews.toLocaleString('en-GB')}</a>` : ''}</span>`;
+    return `<span class="rating"><span class="rating__num">${rate1(p.rating)}</span><span class="stars" role="img" aria-label="${p.rating} out of 5 stars"><span class="stars__fill" style="width:${pct}%"></span></span>${withCount ? `<a class="rating__count" href="#/p/${p.id}/reviews">${num(p.reviews)}</a>` : ''}</span>`;
   }
 
   const primeBadge = `<span class="prime" aria-label="Prime"><svg viewBox="0 0 16 12" width="14" height="11" aria-hidden="true"><path d="M1.5 6.5 6 10.5 14.5 1.5" fill="none" stroke="#F59E0B" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>prime</span>`;
@@ -632,8 +637,8 @@
       <div class="reviews__grid">
         <div class="reviews__summary">
           ${stars(p, false)}
-          <p class="reviews__avg">${p.rating.toFixed(1)} out of 5</p>
-          <p class="reviews__total">${(p.reviews + (mine ? 1 : 0)).toLocaleString('en-GB')} global ratings</p>
+          <p class="reviews__avg">${rate1(p.rating)} out of 5</p>
+          <p class="reviews__total">${num(p.reviews + (mine ? 1 : 0))} global ratings</p>
           <table class="reviews__bars"><tbody>${bars.map(([n, pct]) => `<tr><th scope="row">${n} star</th><td><span class="reviews__bar"><span style="width:${pct}%"></span></span></td><td>${pct}%</td></tr>`).join('')}</tbody></table>
         </div>
         <div class="reviews__note">

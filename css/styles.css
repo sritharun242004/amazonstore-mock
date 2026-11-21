@@ -311,6 +311,8 @@ ul, ol { margin: 0; padding: 0; }
 .price__sym { font-size: 13px; margin-top: 2px; }
 .price__whole { font-size: 24px; }
 .price__frac { font-size: 13px; margin-top: 2px; }
+/* French order: 30 ,00 € */
+.price--fr .price__sym { margin-left: 2px; }
 .price--sm .price__whole { font-size: 18px; }
 .price--sm .price__sym, .price--sm .price__frac { font-size: 11px; }
 .price--lg .price__whole { font-size: 30px; }

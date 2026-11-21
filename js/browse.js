@@ -18,7 +18,7 @@
 
   const matches = term => {
     const t = term.toLowerCase();
-    return products.filter(p => !t || (p.name + ' ' + p.aromaText + ' ' + p.cat + ' ' + (p.family || '') + ' ' + p.aromas.join(' ')).toLowerCase().includes(t));
+    return products.filter(p => !t || (p.name + ' ' + (p.nameEn || '') + ' ' + p.aromaText + ' ' + p.cat + ' ' + (p.family || '') + ' ' + p.aromas.join(' ')).toLowerCase().includes(t));
   };
 
   function apply(list) {
