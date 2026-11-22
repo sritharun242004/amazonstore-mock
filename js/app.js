@@ -20,7 +20,7 @@
   const IMG = ['jpg', 'jpeg', 'webp', 'png', 'avif'];
   const VID = ['mp4', 'webm'];
   function loadAssets() {
-    ['hero', 'hero-band', 'hero-band-left', 'banner-campaign', 'video-poster', 'banner-motion', 'brand-film-poster',
+    ['hero', 'hero-banner', 'hero-band', 'hero-band-left', 'banner-campaign', 'video-poster', 'banner-motion', 'brand-film-poster',
       'banner-hand-body', 'banner-fragrance', 'banner-for-the-home', 'banner-gifts',
       'cat-hand-body', 'cat-fragrance', 'cat-for-the-home', 'cat-gifts'
     ].forEach(k => { found[k] = pick('img/' + k, IMG); });
@@ -829,9 +829,15 @@
 
   // Brand band: a looping video/hero.mp4 plays behind the logo if present; otherwise the textured band shows
   const drawHero = () => {
-    if (!found.heroVideo && !found['hero-band']) return;
     const hero = $('#heroArt');
     const band = hero.closest('.store-hero');
+    // A finished banner (img/hero-banner.*) already carries the logo and tagline, so it is shown whole
+    if (found['hero-banner']) {
+      band.classList.add('store-hero--banner');
+      hero.innerHTML = `<img src="${esc(found['hero-banner'])}" alt="" fetchpriority="high">`;
+      return;
+    }
+    if (!found.heroVideo && !found['hero-band']) return;
     // Two photos: one each side, both fading into a dark centre that holds the logo
     if (!found.heroVideo && found['hero-band-left']) {
       band.classList.add('store-hero--duo');

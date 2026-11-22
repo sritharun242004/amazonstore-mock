@@ -12,6 +12,7 @@ window.ASSETS = [
   "img/cat-hand-body.webp",
   "img/hero-band-left.webp",
   "img/hero-band.webp",
+  "img/hero-banner.webp",
   "img/hero.webp",
   "img/products/arms-outstretched-2.webp",
   "img/products/arms-outstretched-3.webp",
