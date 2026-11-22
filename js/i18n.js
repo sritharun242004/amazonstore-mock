@@ -9,7 +9,7 @@
     // Amazon header and menus
     'Deliver to': 'Livrer à', 'Hello, guest': 'Bonjour', 'Account & Lists': 'Compte et listes', 'Returns': 'Retours',
     '& Orders': 'et commandes', 'Basket': 'Panier', 'All': 'Toutes', "Today's Deals": 'Ventes Flash', 'Beauty': 'Beauté',
-    'Luxury Beauty': 'Beauté de luxe', 'Gift Ideas': 'Idées cadeaux', 'Best Sellers': 'Meilleures ventes',
+    'Luxury Beauty': 'Beauté de luxe', 'All Departments': 'Toutes nos catégories', 'Gift Ideas': 'Idées cadeaux', 'Best Sellers': 'Meilleures ventes',
     'Customer Service': 'Service client', 'Christmas gifts, delivered tomorrow with Prime': 'Cadeaux de Noël, livrés demain avec Prime',
     'Search Amazon.fr': 'Rechercher Amazon.fr', 'Hello, guest ': 'Bonjour ',
     'Aesop store': 'Boutique Aesop', 'Store home': 'Accueil de la boutique', 'Trending': 'Tendances', 'Help & settings': 'Aide et paramètres',

@@ -112,7 +112,7 @@ ul, ol { margin: 0; padding: 0; }
 .amz-search:focus-within { box-shadow: 0 0 0 3px var(--amz-search); }
 .amz-search__cat {
   border: 0; background: #E6E6E6; color: #555; font-size: 12px; padding: 0 6px 0 10px;
-  border-right: 1px solid #cdcdcd; max-width: 90px;
+  border-right: 1px solid #cdcdcd; max-width: 118px;
 }
 .amz-search__input { flex: 1; min-width: 0; border: 0; padding: 0 10px; font-size: 15px; color: var(--amz-ink); }
 .amz-search__input:focus { outline: none; }
