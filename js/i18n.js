@@ -210,6 +210,7 @@
     'Your Wish List is private': 'Votre liste d’envies est privée', 'Track, return or buy things again': 'Suivre, retourner ou racheter',
     'FREE delivery tomorrow on every Aesop formulation ': 'Livraison GRATUITE demain sur toutes les formules Aesop ',
     'Atmospheric formulations for the spaces you live in.': 'Des formules d’atmosphère pour les espaces où vous vivez.',
+    'Checking…': 'Vérification…', 'Enter a valid 5-digit French postcode, such as 75011.': 'Saisissez un code postal français valide à 5 chiffres, par exemple 75011.',
     'Close': 'Fermer', 'Keep it': 'Conserver', 'Got it': 'Compris'
   };
 
@@ -242,6 +243,7 @@
     [/^Returns until (.+)$/, (m, d) => `Retours jusqu’au ${d.replace(wordRe, w => WORDS[w])}`],
     [/^Active subscriptions \((\d+)\)$/, (m, n) => `Abonnements actifs (${n})`],
     [/^Delivered tomorrow$/, () => 'Livré demain'],
+    [/^We couldn't find the postcode (\d{5})\.(?: Check it and try again\.)?$/, (m, z) => `Code postal ${z} introuvable. Vérifiez-le et réessayez.`],
     [/^› (.+)$/, (m, t) => `› ${FR[t] || t}`],
     [/^ for $/, () => ' pour '],
     [/^(\d+) global ratings$/, (m, n) => `${n} évaluations`],

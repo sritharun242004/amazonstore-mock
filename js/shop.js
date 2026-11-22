@@ -50,7 +50,28 @@
 
   const CITIES = { '75': 'Paris', '69': 'Lyon', '13': 'Marseille', '33': 'Bordeaux', '31': 'Toulouse', '59': 'Lille',
     '06': 'Nice', '44': 'Nantes', '67': 'Strasbourg', '34': 'Montpellier', '35': 'Rennes', '92': 'Hauts-de-Seine', '94': 'Val-de-Marne' };
-  const city = zip => CITIES[zip.slice(0, 2)] || 'France';
+  // Postcodes are checked against the French government's public address service (geo.api.gouv.fr),
+  // which returns the town for a real postcode and nothing for a made-up one. Results are cached in
+  // this browser; if the service can't be reached, the department list above is the fallback.
+  const towns = load('towns', {});
+  const city = zip => towns[zip] || CITIES[zip.slice(0, 2)] || 'France';
+  async function lookupZip(zip) {
+    if (!/^\d{5}$/.test(zip)) return { ok: false };
+    if (towns[zip]) return { ok: true, town: towns[zip] };
+    try {
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), 5000);
+      const res = await fetch(`https://geo.api.gouv.fr/communes?codePostal=${zip}&fields=nom&format=json`, { signal: ctrl.signal });
+      clearTimeout(timer);
+      const list = await res.json();
+      if (!Array.isArray(list) || !list.length) return { ok: false };
+      towns[zip] = list[0].nom;
+      save('towns', towns);
+      return { ok: true, town: towns[zip], all: list.map(c => c.nom) };
+    } catch {
+      return { ok: true, town: city(zip), offline: true };   // service unreachable: accept the format
+    }
+  }
   const where = () => `${city(state.zip)} ${state.zip}`;
 
   const dayAfter = n => { const d = new Date(); d.setDate(d.getDate() + n); return d; };
@@ -640,13 +661,21 @@
     if (!form) return;
     e.preventDefault();
     const zip = form.zip.value.trim();
-    if (!/^\d{5}$/.test(zip)) { form.querySelector('.loc-error').hidden = false; form.zip.focus(); return; }
-    state.zip = zip;
-    persist();
-    updateLocation();
-    closePanel();
-    refresh();
-    toast(`<b>Delivering to ${esc(where())}</b> Delivery dates are updated.`);
+    const err = form.querySelector('.loc-error'), btn = form.querySelector('button[type="submit"]');
+    const fail = text => { err.textContent = text; err.hidden = false; form.zip.setAttribute('aria-invalid', 'true'); form.zip.focus(); };
+    if (!/^\d{5}$/.test(zip)) { fail('Enter a valid 5-digit French postcode, such as 75011.'); return; }
+    btn.disabled = true; btn.textContent = 'Checking…';
+    lookupZip(zip).then(r => {
+      if (!form.isConnected) return;
+      btn.disabled = false; btn.textContent = 'Apply';
+      if (!r.ok) { fail(`We couldn't find the postcode ${zip}. Check it and try again.`); return; }
+      state.zip = zip;
+      persist();
+      updateLocation();
+      closePanel();
+      refresh();
+      toast(`<b>Delivering to ${esc(where())}</b> Delivery dates are updated.`);
+    });
   });
 
   /* ---------- orders ---------- */
@@ -1171,7 +1200,7 @@
 
   // Shared with account.js and browse.js
   S.shop = { state, persist, refresh, live, openPanel, closePanel, confirmPanel, head, eur, plural, count, countOf, chosen,
-    subtotal, addToCart, updateCount, updateLocation, where, city, dayAfter, longDate, shortDate, shipTo, addrLines,
+    subtotal, addToCart, updateCount, updateLocation, where, city, lookupZip, dayAfter, longDate, shortDate, shipTo, addrLines,
     checkIcon, trashIcon, openAdded, toast };
   hooks.push(afterRender);
 

@@ -6,7 +6,7 @@
   const { pages, titles, hooks, byId, esc, productSVG, price, toast, $ } = S;
   const {
     state, persist, refresh, live, openPanel, closePanel, confirmPanel, head, eur, plural,
-    updateLocation, city, longDate, shortDate, shipTo, addrLines
+    updateLocation, city, lookupZip, longDate, shortDate, shipTo, addrLines
   } = S.shop;
 
   live.push('account', 'addresses', 'subscriptions', 'history', 'my-reviews');
@@ -98,7 +98,14 @@
   document.addEventListener('input', e => {
     if (!e.target.matches('[data-addr-form] [name="zip"]')) return;
     const zip = e.target.value.trim(), cityInput = e.target.form.city;
-    if (/^\d{5}$/.test(zip) && (!cityInput.value || cityInput.dataset.auto)) { cityInput.value = city(zip) === 'France' ? '' : city(zip); cityInput.dataset.auto = '1'; }
+    if (!/^\d{5}$/.test(zip) || (cityInput.value && !cityInput.dataset.auto)) return;
+    lookupZip(zip).then(r => {
+      if (e.target.value.trim() !== zip) return;            // typed on since
+      const err = e.target.form.querySelector('#ae-zip');
+      if (!r.ok) { err.textContent = `We couldn't find the postcode ${zip}.`; err.hidden = false; e.target.setAttribute('aria-invalid', 'true'); return; }
+      err.hidden = true; e.target.setAttribute('aria-invalid', 'false');
+      if (!cityInput.value || cityInput.dataset.auto) { cityInput.value = r.town === 'France' ? '' : r.town; cityInput.dataset.auto = '1'; }
+    });
   });
 
   document.addEventListener('input', e => { if (e.target.matches('[data-addr-form] [name="city"]')) delete e.target.dataset.auto; });
@@ -119,6 +126,20 @@
     });
     const first = Object.keys(bad).find(k => bad[k]);
     if (first) { form.elements[first].focus(); return; }
+    // The postcode must exist (checked against the French address service)
+    lookupZip(data.zip).then(r => {
+      if (!form.isConnected) return;
+      if (!r.ok) {
+        const err = form.querySelector('#ae-zip');
+        err.textContent = `We couldn't find the postcode ${data.zip}. Check it and try again.`;
+        err.hidden = false; form.elements.zip.setAttribute('aria-invalid', 'true'); form.elements.zip.focus();
+        return;
+      }
+      saveAddress(form, data);
+    });
+  });
+
+  function saveAddress(form, data) {
     const id = form.dataset.addrForm === 'new' ? 'A' + Date.now().toString(36) : form.dataset.addrForm;
     const i = state.addresses.findIndex(x => x.id === id);
     if (i > -1) state.addresses[i] = { id, ...data }; else state.addresses.push({ id, ...data });
@@ -126,7 +147,7 @@
     persist();
     location.hash = form.dataset.back === 'checkout' ? '#/checkout' : '#/addresses';
     toast(i > -1 ? '<b>Address saved</b>' : '<b>Address added</b>');
-  });
+  }
 
   function useAddress(id, announce = true) {
     const a = state.addresses.find(x => x.id === id);
