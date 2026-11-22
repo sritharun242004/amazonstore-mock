@@ -22,6 +22,7 @@
   function loadAssets() {
     ['hero', 'hero-banner', 'hero-band', 'hero-band-left', 'banner-campaign', 'video-poster', 'banner-motion', 'brand-film-poster',
       'banner-hand-body', 'banner-fragrance', 'banner-for-the-home', 'banner-gifts',
+      'banner-hand-body-full', 'banner-fragrance-full', 'banner-for-the-home-full', 'banner-gifts-full',
       'cat-hand-body', 'cat-fragrance', 'cat-for-the-home', 'cat-gifts'
     ].forEach(k => { found[k] = pick('img/' + k, IMG); });
     products.forEach(p => {
@@ -134,6 +135,13 @@
   // With a photo the banner becomes Aesop's 50/50 split: copy panel beside the image.
   // photoDark sets the copy panel to the dark tone that suits that photo.
   function banner({ key, title, lede, product, dark, photoDark = dark, side = '', cls = '' }) {
+    // A finished banner (img/banner-<key>-full.*) already has the title in the picture: show it whole,
+    // and keep the heading for screen readers and search
+    const full = found[`banner-${key}-full`];
+    if (full) return `<section class="banner banner--full ${cls}">
+        <img class="banner__full" src="${esc(full)}" alt="">
+        <h1 class="visually-hidden">${title}</h1>${lede ? `<p class="visually-hidden">${lede}</p>` : ''}${side}
+      </section>`;
     const photo = found['banner-' + key];
     const isDark = photo ? photoDark : dark;
     return `<section class="banner ${isDark ? 'banner--dark' : ''} ${photo ? 'banner--photo' : ''} ${cls}">

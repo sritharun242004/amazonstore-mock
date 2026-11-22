@@ -3,6 +3,7 @@ window.ASSETS = [
   "img/banner-for-the-home.webp",
   "img/banner-fragrance.webp",
   "img/banner-gifts.webp",
+  "img/banner-hand-body-full.webp",
   "img/banner-hand-body.webp",
   "img/banner-motion.webp",
   "img/brand-film-poster.webp",

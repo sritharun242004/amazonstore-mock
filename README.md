@@ -67,6 +67,7 @@ Out of the box, every image is an SVG illustration and the video banner is an an
 | Slot | File name | Shape |
 |---|---|---|
 | Store banner (top of every page) | `img/hero-banner.webp`: a finished banner with the logo and tagline in the photo, shown whole. Without it the band falls back to `img/hero-band*` photos or a looping `video/hero.mp4` behind the logo | about 3:1 |
+| Finished page banners | `img/banner-<page>-full.webp` (`hand-body`, `fragrance`, `for-the-home`, `gifts`): a banner with the title already in the picture, shown whole in place of the photo-and-text banner | any wide size |
 | Home video banner | `video/banner.mp4` (+ optional `img/video-poster.jpg`) | about 3:1, silent loop |
 | 2026 Gift Guide banner (top of home) | `video/gift-guide.mp4`, e.g. the aesop.fr "Gifts for the gathering" film | about 4:3, silent loop |
 | Hand & Body banner | `img/banner-hand-body.jpg` | about 3:1, subject on the right |
