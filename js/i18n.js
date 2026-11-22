@@ -209,6 +209,7 @@
     '€100 & above': '100 € et plus', 'Up to €40': 'Jusqu’à 40 €', '€40 to €100': 'De 40 € à 100 €', 'Lists': 'Listes',
     'Your Wish List is private': 'Votre liste d’envies est privée', 'Track, return or buy things again': 'Suivre, retourner ou racheter',
     'FREE delivery tomorrow on every Aesop formulation ': 'Livraison GRATUITE demain sur toutes les formules Aesop ',
+    'Atmospheric formulations for the spaces you live in.': 'Des formules d’atmosphère pour les espaces où vous vivez.',
     'Close': 'Fermer', 'Keep it': 'Conserver', 'Got it': 'Compris'
   };
 

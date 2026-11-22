@@ -1127,6 +1127,7 @@ button.pdp__main { display: block; width: 100%; border: 0; font: inherit; color:
 .banner--full { position: relative; }
 .banner__overlay { position: absolute; left: 5.6%; bottom: 9%; display: flex; align-items: center; gap: 18px; }
 .banner--full .banner__link { color: #fff; }
+.banner__name { font: 700 14px var(--f-amz); color: var(--amz-ink); }
 @media (max-width: 1100px) {
   .banner__overlay { position: static; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; padding: 14px 0 0; }
   .banner--full .banner__buy { border: 1px solid #D5D9D9; }

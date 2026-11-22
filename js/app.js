@@ -134,15 +134,19 @@
 
   // With a photo the banner becomes Aesop's 50/50 split: copy panel beside the image.
   // photoDark sets the copy panel to the dark tone that suits that photo.
-  function banner({ key, title, lede, product, dark, photoDark = dark, side = '', cls = '' }) {
+  // full: optional { title, lede, side } used instead when the finished banner image shows different copy
+  function banner({ key, title, lede, product, dark, photoDark = dark, side = '', cls = '', full: fullCopy = {} }) {
     // A finished banner (img/banner-<key>-full.*) already has the title in the picture: show it whole,
     // and keep the heading for screen readers and search
     const full = found[`banner-${key}-full`];
-    if (full) return `<section class="banner banner--full ${cls}">
+    if (full) {
+      ({ title = title, lede = lede, side = side } = fullCopy);
+      return `<section class="banner banner--full ${cls}">
         <img class="banner__full" src="${esc(full)}" alt="">
         <h1 class="visually-hidden">${title}</h1>${lede ? `<p class="visually-hidden">${lede}</p>` : ''}
         ${side ? `<div class="banner__overlay">${side}</div>` : ''}
       </section>`;
+    }
     const photo = found['banner-' + key];
     const isDark = photo ? photoDark : dark;
     return `<section class="banner ${isDark ? 'banner--dark' : ''} ${photo ? 'banner--photo' : ''} ${cls}">
@@ -380,7 +384,12 @@
       ${banner({
         key: 'for-the-home', title: 'Post-Poo Drops', product: pp,
         lede: 'A few drops in the bowl after you flush. The next visitor will never know.',
-        side: `<div class="banner__buy">${price(pp)} <span class="banner__size">100 mL</span> ${parity}</div><div class="banner__actions">${addBtn(pp)} <a class="banner__link" href="#/p/${pp.id}">See details</a></div>`
+        side: `<div class="banner__buy">${price(pp)} <span class="banner__size">100 mL</span> ${parity}</div><div class="banner__actions">${addBtn(pp)} <a class="banner__link" href="#/p/${pp.id}">See details</a></div>`,
+        // The finished banner introduces the whole page, so its buy row names the featured product
+        full: {
+          title: 'For the home', lede: 'Atmospheric formulations for the spaces you live in.',
+          side: `<div class="banner__buy"><span class="banner__name">${esc(pp.name)}</span> ${price(pp)} <span class="banner__size">${esc(pp.size)}</span></div><div class="banner__actions">${addBtn(pp)} <a class="banner__link" href="#/p/${pp.id}">See details</a></div>`
+        }
       })}
 
       <section class="block">
